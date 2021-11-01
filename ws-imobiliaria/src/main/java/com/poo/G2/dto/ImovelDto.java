@@ -10,6 +10,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -52,6 +53,8 @@ public class ImovelDto {
 
     @NotBlank(message = "O campo 'flNegociacao' é requerido.")
     private String flNegociacao;
+
+    private List<String> imagens;
 
     @JsonFormat(pattern = "dd/MM/yyyy hh:mm:ss")
     private LocalDateTime dtCadastro;

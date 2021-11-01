@@ -47,3 +47,17 @@ CREATE TABLE `IMOBILIARIA`.`IMOVEL` (
     ON UPDATE NO ACTION)
 ENGINE = INNODB
 DEFAULT CHARACTER SET = UTF32;
+
+CREATE TABLE `imobiliaria`.`imagem_imovel` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `id_imovel` INT NOT NULL,
+  `blob_imagem` BLOB NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `imovel_idx` (`id_imovel` ASC),
+  CONSTRAINT `imovel`
+    FOREIGN KEY (`id_imovel`)
+    REFERENCES `imobiliaria`.`imovel` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
