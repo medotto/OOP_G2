@@ -54,7 +54,9 @@ public class ImovelDto {
     @NotBlank(message = "O campo 'flNegociacao' é requerido.")
     private String flNegociacao;
 
-    private List<String> imagens;
+    private List<String> imagensBase64;
+
+    private List<String> imagensBlob;
 
     @JsonFormat(pattern = "dd/MM/yyyy hh:mm:ss")
     private LocalDateTime dtCadastro;

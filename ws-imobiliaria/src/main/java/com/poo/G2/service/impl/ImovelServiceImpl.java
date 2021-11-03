@@ -1,6 +1,7 @@
 package com.poo.G2.service.impl;
 
 import com.poo.G2.dto.ImovelDto;
+import com.poo.G2.entity.ImagemImovel;
 import com.poo.G2.entity.Imovel;
 import com.poo.G2.factory.ImagemImovelFactory;
 import com.poo.G2.mapper.Mapper;
@@ -39,7 +40,7 @@ public class ImovelServiceImpl implements ImovelService {
         entity = imovelRepository.save(entity);
 
         long idImovel = entity.getId();
-        var imagens = dto.getImagens()
+        var imagens = dto.getImagensBase64()
                 .stream()
                 .map(img -> ImagemImovelFactory.createFrom(img, idImovel))
                 .collect(Collectors.toList());
@@ -57,9 +58,19 @@ public class ImovelServiceImpl implements ImovelService {
     @Override
     public ImovelDto findById(Long id) {
         Optional<Imovel> imovelOpt = imovelRepository.findById(id);
-        return imovelOpt
-                .map(imovel -> mapper.mapToDto(imovel, DTO_CLASS))
-                .orElse(null);
+        if(imovelOpt.isPresent()) {
+            Imovel entity = imovelOpt.get();
+            ImovelDto dto = mapper.mapToDto(entity, DTO_CLASS);
+            dto.setImagensBlob(
+                entity.getImagemImovelList()
+                    .stream()
+                    .map(ImagemImovel::getBlobImagem)
+                    .map(this::bytesToBase64)
+                    .collect(Collectors.toList())
+            );
+            return dto;
+        }
+        return null;
     }
 
     private String bytesToBase64(byte[] bytes) {

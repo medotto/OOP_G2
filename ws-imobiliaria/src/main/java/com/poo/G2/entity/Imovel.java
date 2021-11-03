@@ -4,9 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "IMOVEL")
@@ -14,6 +17,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Audited
 public class Imovel {
 
     @Id
@@ -46,6 +50,9 @@ public class Imovel {
     @JoinColumn(name = "ID_PROPRIETARIO", nullable = false)
     private Proprietario proprietario;
 
+    @OneToMany(mappedBy = "idImovel")
+    private List<ImagemImovel> imagemImovelList;
+
     @Column(name = "FL_FINANCIADO")
     private String flFinanciado;
 
@@ -56,9 +63,11 @@ public class Imovel {
     private String flNegociacao;
 
     @Column(name = "DT_CADASTRO")
+    @NotAudited
     private LocalDateTime dtCadastro;
 
     @Column(name = "DT_ALTERACAO")
+    @NotAudited
     private LocalDateTime dtAlteracao;
 
 }
