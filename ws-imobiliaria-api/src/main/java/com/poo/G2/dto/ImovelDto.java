@@ -24,7 +24,7 @@ public class ImovelDto {
     private String endereco;
 
     @NotBlank(message = "O campo 'bairro' é requerido.")
-    private String bairro;
+        private String bairro;
 
     @NotBlank(message = "O campo 'cidade' é requerido.")
     private String cidade;
