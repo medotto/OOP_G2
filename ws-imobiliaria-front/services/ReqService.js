@@ -25,13 +25,6 @@ const DoRequest = async (endpoint, data, method, hasAuth = true, headers = {}) =
         setHeaderProp(requestConfig.headers, "Connection", "keep-alive");
     }
 
-    if (hasAuth) {
-        setHeaderProp(requestConfig.headers, "Authorization",
-            (sessionStorage)
-                ? sessionStorage.getItem("token") + "UserName" + sessionStorage.getItem("username")
-                : null);
-    }
-
     let result = await fetch(`${apiAddress}/${endpoint}`, requestConfig);
 
     switch (result.status) {
