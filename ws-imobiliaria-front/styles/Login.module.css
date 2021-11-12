@@ -69,17 +69,5 @@
   margin: 20px auto;
 }
 
-.facebookLoginButtonContainer {
-  background-color: #1976d2;
-}
-.facebookLoginButton {
-  background-color: transparent;
-  text-transform: uppercase;
-  border: none;
-  padding: 0.25em;
-  color: white;
-  width: calc((90vw/12) * 3);
-}
-.facebookLoginButton:hover {
-  cursor: pointer;
+.loginPaperCard{
 }
