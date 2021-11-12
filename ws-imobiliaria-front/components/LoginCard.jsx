@@ -57,12 +57,7 @@ export default function LoginCard() {
             <Typography component="h1" variant="h5">
               Entrar
             </Typography>
-            <Box
-              component="form"
-              noValidate
-              onSubmit={handleSubmit}
-              sx={{ mt: 1 }}
-            >
+            <Box component="form" noValidate onSubmit={handleSubmit}>
               <TextField
                 margin="normal"
                 required
@@ -87,7 +82,6 @@ export default function LoginCard() {
                 control={<Checkbox value="remember" color="primary" />}
                 label="Lembrar"
               />
-              <br></br>
               <Grid
                 container
                 direction="column"
@@ -97,7 +91,7 @@ export default function LoginCard() {
                 <Button
                   type="submit"
                   variant="contained"
-                  sx={{ mt: 3, width: "205px" }}
+                  sx={{ width: "205px" }}
                 >
                   ENTRAR
                 </Button>
