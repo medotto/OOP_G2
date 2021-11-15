@@ -24,7 +24,7 @@ public class ImovelDto {
     private String endereco;
 
     @NotBlank(message = "O campo 'bairro' é requerido.")
-        private String bairro;
+    private String bairro;
 
     @NotBlank(message = "O campo 'cidade' é requerido.")
     private String cidade;
@@ -54,9 +54,7 @@ public class ImovelDto {
     @NotBlank(message = "O campo 'flNegociacao' é requerido.")
     private String flNegociacao;
 
-    private List<String> imagensBase64;
-
-    private List<String> imagensBlob;
+    private List<ImagemImovelDto> imagemImovelDtoList;
 
     @JsonFormat(pattern = "dd/MM/yyyy hh:mm:ss")
     private LocalDateTime dtCadastro;

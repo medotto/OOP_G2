@@ -19,10 +19,15 @@ public class ImovelControllerImpl extends AbstractController implements ImovelCo
     private ImovelService imovelService;
 
     @Override
-    public ResponseEntity<ImovelDto> create(@Valid ImovelDto dto) {
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(imovelService.create(dto));
+    public ResponseEntity<?> create(@Valid ImovelDto dto) {
+        imovelService.create(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @Override
+    public ResponseEntity<?> update(ImovelDto dto) {
+        imovelService.update(dto);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @Override

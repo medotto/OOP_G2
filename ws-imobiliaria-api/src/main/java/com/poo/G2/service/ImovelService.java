@@ -6,7 +6,9 @@ import java.util.List;
 
 public interface ImovelService {
 
-    ImovelDto create(ImovelDto dto);
+    void create(ImovelDto dto);
+
+    void update(ImovelDto dto);
 
     List<ImovelDto> findAll();
 

@@ -4,6 +4,7 @@ import com.poo.G2.dto.ImovelDto;
 import com.poo.G2.entity.ImagemImovel;
 import com.poo.G2.entity.Imovel;
 import com.poo.G2.factory.ImagemImovelFactory;
+import com.poo.G2.factory.ImovelFactory;
 import com.poo.G2.mapper.Mapper;
 import com.poo.G2.repository.ImagemImovelRepository;
 import com.poo.G2.repository.ImovelRepository;
@@ -12,9 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Base64;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,26 +32,36 @@ public class ImovelServiceImpl implements ImovelService {
     private Mapper<ImovelDto, Imovel> mapper;
 
     @Override
-    public ImovelDto create(ImovelDto dto) {
-        Imovel entity = mapper.mapToEntity(dto, ENTITY_CLASS);
+    public void create(ImovelDto dto) {
+        Imovel entity = ImovelFactory.createEntityFrom(dto);
 
         entity.setDtCadastro(LocalDateTime.now());
         entity = imovelRepository.save(entity);
 
-        long idImovel = entity.getId();
-        var imagens = dto.getImagensBase64()
-                .stream()
-                .map(img -> ImagemImovelFactory.createFrom(img, idImovel))
-                .collect(Collectors.toList());
-        imagemImovelRepository.saveAll(imagens);
+        final long idImovel = entity.getId();
+        if(Objects.nonNull(entity.getImagemImovelList())) {
+            entity.getImagemImovelList().forEach(imagem -> imagem.setIdImovel(idImovel));
+            imagemImovelRepository.saveAll(entity.getImagemImovelList());
+        }
+    }
 
-        return mapper.mapToDto(entity, DTO_CLASS);
+    @Override
+    public void update(ImovelDto dto) {
+        Imovel entity = ImovelFactory.createEntityFrom(dto);
+
+        entity.setDtAlteracao(LocalDateTime.now());
+        imovelRepository.save(entity);
     }
 
     @Override
     public List<ImovelDto> findAll() {
         var imoveis = imovelRepository.findAll();
-        return mapper.mapToDtoList(imoveis, DTO_CLASS);
+        if(!imoveis.isEmpty()) {
+            return imoveis.stream()
+                    .map(ImovelFactory::createDtoFrom)
+                    .collect(Collectors.toList());
+        }
+        return new ArrayList<>();
     }
 
     @Override
@@ -60,21 +69,9 @@ public class ImovelServiceImpl implements ImovelService {
         Optional<Imovel> imovelOpt = imovelRepository.findById(id);
         if(imovelOpt.isPresent()) {
             Imovel entity = imovelOpt.get();
-            ImovelDto dto = mapper.mapToDto(entity, DTO_CLASS);
-            dto.setImagensBlob(
-                entity.getImagemImovelList()
-                    .stream()
-                    .map(ImagemImovel::getBlobImagem)
-                    .map(this::bytesToBase64)
-                    .collect(Collectors.toList())
-            );
-            return dto;
+            return ImovelFactory.createDtoFrom(entity);
         }
         return null;
-    }
-
-    private String bytesToBase64(byte[] bytes) {
-        return Base64.getEncoder().encodeToString(bytes);
     }
 
 }

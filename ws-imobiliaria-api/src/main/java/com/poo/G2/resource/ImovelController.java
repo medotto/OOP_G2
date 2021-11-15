@@ -11,7 +11,10 @@ import java.util.List;
 public interface ImovelController {
 
     @PostMapping
-    ResponseEntity<ImovelDto> create(@RequestBody ImovelDto dto);
+    ResponseEntity<?> create(@RequestBody ImovelDto dto);
+
+    @PutMapping
+    ResponseEntity<?> update(@RequestBody ImovelDto dto);
 
     @GetMapping
     ResponseEntity<List<ImovelDto>> findAll();
