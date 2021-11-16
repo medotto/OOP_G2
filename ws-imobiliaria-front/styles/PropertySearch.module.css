@@ -1,0 +1,31 @@
+.mainContainer {
+  padding: 10px 10px 10px 25px;
+  margin-top: 50px !important;
+  flex-wrap: wrap !important;
+}
+.drawerButtonMoved,
+.drawerButtonClosed {
+  position: fixed !important;
+  top: 49vh;
+  background-color: white !important;
+  border-radius: 0px 50px 50px 0px !important
+}
+
+.drawerButtonMoved {
+  left: 190px;
+}
+.drawerButtonClosed {
+  left: -5px;
+}
+.filterTip {
+  background-color: white;
+  height: 100vh;
+  border-right: 1px solid rgb(220, 220, 220);
+  width: 10px;
+  top: 65px;
+  position: fixed !important;
+}
+.filterForm{
+  padding: 10px !important;
+  margin-top: 5px !important;
+}

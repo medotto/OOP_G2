@@ -31,3 +31,10 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Node Modules ###
+ws-imobiliaria-front/nodemodules/
+/ws-imobiliaria-front/node_modules
+/ws-imobiliaria-front/.dist
+/ws-imobiliaria-front/.next
+/ws-imobiliaria-front/.env.local

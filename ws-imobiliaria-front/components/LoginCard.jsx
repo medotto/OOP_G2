@@ -1,33 +1,29 @@
 import { React, useState } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
-import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
-import Link from "@material-ui/core/Link";
 import Paper from "@material-ui/core/Paper";
 import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
-import { createTheme, ThemeProvider } from "@material-ui/core/styles";
+import { createTheme } from "@material-ui/core/styles";
 import loginStyles from "../styles/Login.module.css";
-import Image from "next/dist/client/image";
 import { SocialMediaAuth } from "./SocialMediaAuth";
+import { useRouter } from "next/router";
 
 const theme = createTheme();
 
 export default function LoginCard() {
+  const router = useRouter();
   const [facebookLoginClick, setFacebookLoginClick] = useState(false);
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     // eslint-disable-next-line no-console
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    router.push("/PropertySearch")
   };
 
   return (
@@ -39,11 +35,10 @@ export default function LoginCard() {
           direction="column"
           justifyContent="center"
           alignItems="center"
-          sx={{ height: "100vh" }}
           className={loginStyles.loginPaperCard}
         >
           <Box
-            sx={{
+            style={{
               my: 8,
               mx: 4,
               display: "flex",
@@ -51,7 +46,7 @@ export default function LoginCard() {
               alignItems: "center",
             }}
           >
-            <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+            <Avatar style={{ m: 1, bgcolor: "secondary.main" }}>
               <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5">
@@ -91,7 +86,8 @@ export default function LoginCard() {
                 <Button
                   type="submit"
                   variant="contained"
-                  sx={{ width: "205px" }}
+                  color="primary"
+                  style={{ width: "205px" }}
                 >
                   ENTRAR
                 </Button>
@@ -106,7 +102,7 @@ export default function LoginCard() {
         xs={false}
         sm={5}
         md={8}
-        sx={{
+        style={{
           backgroundImage:
             "url(https://images.adsttc.com/media/images/5e1d/02c3/3312/fd58/9c00/06e9/large_jpg/NewHouse_SA_Photo_01.jpg?1578959519)",
           backgroundRepeat: "no-repeat",

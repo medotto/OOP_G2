@@ -1,8 +1,10 @@
-const apiAddress = `${process.env.API_ADDRESS}:${process.env.API_PORT}`;
 const setHeaderProp = (header, propName, propValue) => header[propName] = propValue;
 import Store from "../redux/store/Store";
 import * as ToasterActions from "../redux/actions/ToasterActions";
 
+export const assembleAPIAddress = (endpoint) => {
+    return `${process.env.API_ADDRESS}:${process.env.API_PORT}/${endpoint}`
+}
 /**
  * Makes a request to API. Receives the requisition url on path, the data, the req method and 
  * req headers (optional)
@@ -23,9 +25,14 @@ const DoRequest = async (endpoint, data, method, hasAuth = true, headers = {}) =
         setHeaderProp(requestConfig.headers, "Content-Type", "application/json");
         setHeaderProp(requestConfig.headers, "Accept", "*");
         setHeaderProp(requestConfig.headers, "Connection", "keep-alive");
+        setHeaderProp(requestConfig.headers, "Access-Control-Allow-Origin", "*");
+        setHeaderProp(requestConfig.headers, "Access-Control-Allow-Methods", "DELETE, POST, GET, OPTIONS");
+        setHeaderProp(requestConfig.headers, "Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
     }
 
-    let result = await fetch(`${apiAddress}/${endpoint}`, requestConfig);
+    let result = await fetch(assembleAPIAddress(endpoint), requestConfig)
+        .then((resp) => resp.json())
+        .then(resp => resp);
 
     switch (result.status) {
         case 500:
