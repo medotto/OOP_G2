@@ -50,7 +50,7 @@ public class Imovel {
     @JoinColumn(name = "ID_PROPRIETARIO", nullable = false)
     private Proprietario proprietario;
 
-    @OneToMany(mappedBy = "idImovel")
+    @OneToMany(mappedBy = "idImovel", cascade = CascadeType.REMOVE)
     private List<ImagemImovel> imagemImovelList;
 
     @Column(name = "FL_FINANCIADO")

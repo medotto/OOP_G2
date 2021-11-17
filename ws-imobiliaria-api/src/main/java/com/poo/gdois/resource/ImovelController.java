@@ -22,9 +22,8 @@ public interface ImovelController {
     @GetMapping(path = "/{id}")
     ResponseEntity<ImovelDto> findById(@PathVariable Long id);
 
-    //TODO: DELETE DE IMOVEL
-
-    //TODO: RESOURCE DE SITUACAO
+    @DeleteMapping(path = "/{id}")
+    ResponseEntity<?> delete(@PathVariable Long id);
 
     //TODO: JOB PRA DIZER SE TA ATIVO OU NAO
 

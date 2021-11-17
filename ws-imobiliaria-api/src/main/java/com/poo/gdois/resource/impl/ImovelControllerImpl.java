@@ -41,4 +41,10 @@ public class ImovelControllerImpl extends AbstractController implements ImovelCo
         return buildSuccessOrNoContentResponse(imovel);
     }
 
+    @Override
+    public ResponseEntity<?> delete(Long id) {
+        imovelService.deleteById(id);
+        return ResponseEntity.ok().build();
+    }
+
 }

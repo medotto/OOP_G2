@@ -72,4 +72,9 @@ public class ImovelServiceImpl implements ImovelService {
         return null;
     }
 
+    @Override
+    public void deleteById(Long id) {
+        imovelRepository.deleteById(id);
+    }
+
 }
