@@ -16,6 +16,10 @@ public interface ProprietarioController {
     @PostMapping
     ResponseEntity<ProprietarioDto> create(@RequestBody ProprietarioDto dto);
 
+    //TODO: UPDATE DE PROPRIETARIOS
+
+    //TODO: GET BY ID DE PROPRIETARIOS
+
     @GetMapping
     ResponseEntity<List<ProprietarioDto>> findAll();
 
