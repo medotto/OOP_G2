@@ -1,6 +1,7 @@
 package com.poo.gdois.resource.impl;
 
 import com.poo.gdois.dto.ProprietarioDto;
+import com.poo.gdois.resource.AbstractController;
 import com.poo.gdois.resource.ProprietarioController;
 import com.poo.gdois.service.ProprietarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,16 +13,28 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-public class ProprietarioControllerImpl implements ProprietarioController {
+public class ProprietarioControllerImpl extends AbstractController implements ProprietarioController {
 
     @Autowired
     private ProprietarioService proprietarioService;
 
     @Override
     public ResponseEntity<ProprietarioDto> create(@Valid ProprietarioDto dto) {
+        proprietarioService.create(dto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(proprietarioService.create(dto));
+                .build();
+    }
+
+    @Override
+    public ResponseEntity<?> update(ProprietarioDto dto) {
+        proprietarioService.update(dto);
+        return ResponseEntity.ok().build();
+    }
+
+    @Override
+    public ResponseEntity<ProprietarioDto> findOneById(Long id) {
+        return buildSuccessOrNoContentResponse(proprietarioService.findOneById(id));
     }
 
     @Override

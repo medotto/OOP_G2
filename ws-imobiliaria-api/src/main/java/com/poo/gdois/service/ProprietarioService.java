@@ -6,7 +6,11 @@ import java.util.List;
 
 public interface ProprietarioService {
 
-    ProprietarioDto create(ProprietarioDto dto);
+    void create(ProprietarioDto dto);
+
+    void update(ProprietarioDto dto);
+
+    ProprietarioDto findOneById(Long id);
 
     List<ProprietarioDto> findAll();
 

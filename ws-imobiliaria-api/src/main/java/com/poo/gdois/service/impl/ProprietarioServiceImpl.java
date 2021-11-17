@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProprietarioServiceImpl implements ProprietarioService {
@@ -23,10 +24,25 @@ public class ProprietarioServiceImpl implements ProprietarioService {
     private Mapper<ProprietarioDto, Proprietario> mapper;
 
     @Override
-    public ProprietarioDto create(ProprietarioDto dto) {
+    public void create(ProprietarioDto dto) {
         Proprietario entity = mapper.mapToEntity(dto, ENTITY_CLASS);
-        entity = proprietarioRepository.save(entity);
-        return mapper.mapToDto(entity, DTO_CLASS);
+        proprietarioRepository.save(entity);
+    }
+
+    @Override
+    public void update(ProprietarioDto dto) {
+        Proprietario entity = mapper.mapToEntity(dto, ENTITY_CLASS);
+        proprietarioRepository.save(entity);
+    }
+
+    @Override
+    public ProprietarioDto findOneById(Long id) {
+        Optional<Proprietario> proprietarioOpt = proprietarioRepository.findById(id);
+        if(proprietarioOpt.isEmpty()) {
+            return null;
+        }
+        Proprietario proprietario = proprietarioOpt.get();
+        return mapper.mapToDto(proprietario, DTO_CLASS);
     }
 
     @Override
