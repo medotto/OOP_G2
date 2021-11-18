@@ -1,5 +1,5 @@
 .mainContainer {
-  padding: 10px 10px 10px 25px;
+  padding: 10px 30px 10px 25px;
   margin-top: 50px !important;
   flex-wrap: wrap !important;
 }
@@ -28,4 +28,10 @@
 .filterForm{
   padding: 10px !important;
   margin-top: 5px !important;
+}
+.orderIcon{
+  
+}
+.filterGrid{
+  padding-left: 25px;
 }

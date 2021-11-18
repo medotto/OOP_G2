@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import { React, useEffect, useState } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
@@ -23,9 +23,14 @@ export default function LoginCard() {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     // eslint-disable-next-line no-console
-    router.push("/PropertySearch")
+    sessionStorage.setItem("auth", true);
+    router.push("/PropertySearch");
   };
 
+  useEffect(() => {
+    sessionStorage.clear();
+  }, []);
+  
   return (
     // <ThemeProvider theme={theme}>
     <Grid container justifyContent="center" component="main">

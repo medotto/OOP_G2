@@ -1,15 +1,22 @@
 import React from "react";
 import Drawer from "@material-ui/core/Drawer";
 import Divider from "@material-ui/core/Divider";
-import { Checkbox } from "@material-ui/core";
+import { Checkbox, Grid, IconButton } from "@material-ui/core";
 import propertyFiltersStyles from "../styles/PropertySearch.module.css";
 import { FormControl, FormGroup, FormControlLabel } from "@material-ui/core";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import * as FilterActions from "../redux/actions/FilterActions";
+import RangeFilter from "./RangeFilter";
+import ArrowDownwardRoundedIcon from "@material-ui/icons/ArrowDownwardRounded";
+import ArrowUpwardRoundedIcon from "@material-ui/icons/ArrowUpwardRounded";
 
 const drawerWidth = 200;
+
+const reverseOrientation = (orientation) => {
+  return orientation.toUpperCase() == "ASC" ? "DESC" : "ASC";
+};
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
   },
   drawer: {
     width: drawerWidth,
-    flexShrink: 0,
+    flexShrink: 0
   },
   drawerPaper: {
     width: drawerWidth,
@@ -70,10 +77,9 @@ const useStyles = makeStyles((theme) => ({
 export default function PropertyFilters(props) {
   const dispatch = useDispatch();
   const classes = useStyles();
-
   const FilterInfo = useSelector((state) => state.FilterReducer);
-
   const { withPhotos } = FilterInfo?.status?.withPhotos;
+  const { withContact } = FilterInfo?.status?.withContact;
 
   const handleChange = (event) => {
     dispatch(
@@ -81,6 +87,14 @@ export default function PropertyFilters(props) {
     );
   };
 
+  const handleReverseOrientation = () => {
+    dispatch(
+      FilterActions.SetOrder(
+        "preco",
+        reverseOrientation(FilterInfo.orderBy.orientation)
+      )
+    );
+  };
   return (
     <Drawer
       className={classes.drawer}
@@ -94,23 +108,53 @@ export default function PropertyFilters(props) {
       <div className={classes.drawerHeader}></div>
       <Divider />
       <Divider />
-      <FormControl
-        component="fieldset"
-        className={propertyFiltersStyles.filterForm}
+      <Grid
+        container
+        direction="row"
+        justifyContent="flex-start"
+        alignItems="center"
+        className={propertyFiltersStyles.filterGrid}
       >
-        <FormGroup>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={withPhotos}
-                onChange={handleChange}
-                name="withPhotos"
-              />
-            }
-            label="Com fotos"
-          />
-        </FormGroup>
-      </FormControl>
+        <FormControl
+          component="fieldset"
+          className={propertyFiltersStyles.filterForm}
+        >
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={withPhotos}
+                  onChange={handleChange}
+                  name="withPhotos"
+                />
+              }
+              label="Com fotos"
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={withContact}
+                  onChange={handleChange}
+                  name="withContact"
+                />
+              }
+              label="Com contato"
+            />
+            <FormControlLabel control={<RangeFilter />} />
+          </FormGroup>
+        </FormControl>
+      </Grid>
+      <Divider />
+      <IconButton
+        className={propertyFiltersStyles.orderIcon}
+        onClick={() => handleReverseOrientation()}
+      >
+        {FilterInfo.orderBy.orientation.toUpperCase() == "ASC" ? (
+          <ArrowDownwardRoundedIcon />
+        ) : (
+          <ArrowUpwardRoundedIcon />
+        )}
+      </IconButton>
     </Drawer>
   );
 }

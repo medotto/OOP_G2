@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { alpha, makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -12,6 +12,7 @@ import NotificationsIcon from "@material-ui/icons/Notifications";
 import MoreIcon from "@material-ui/icons/MoreVert";
 import { useSelector } from "react-redux";
 import navbarStyles from "../styles/Navbar.module.css";
+import { useRouter } from "next/router";
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -78,7 +79,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Navbar() {
+  const router = useRouter();
   const classes = useStyles();
+  const [isAuth, setIsAuth] = useState(!router.pathname.includes("Login"));
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const isMenuOpen = Boolean(anchorEl);
@@ -100,10 +103,15 @@ export default function Navbar() {
   const notificationInfo = useSelector((state) => state.NotificationReducer);
 
   useEffect(() => {
-    console.log(notificationInfo);
   }, [notificationInfo]);
 
-  console.log(notificationInfo);
+  useEffect(() => {
+    if (!isAuth) router.push("/Login");
+  }, [isAuth]);
+
+  useEffect(()=>{
+    setIsAuth(!router.pathname.includes("Login"))
+  },[router.pathname])
 
   const menuId = "primary-search-account-menu";
   const renderMenu = (
@@ -155,45 +163,55 @@ export default function Navbar() {
   );
 
   return (
-    <div className={navbarStyles.navbar}>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography className={classes.title} variant="h6" noWrap>
-            WS IMOBILIÁRIA
-          </Typography>
-          <div className={classes.grow} />
-          <div className={classes.sectionDesktop}>
-            <IconButton aria-label="show 17 new notifications" color="inherit">
-              <Badge badgeContent={notificationInfo.length} color="secondary">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
-            <IconButton
-              edge="end"
-              aria-label="account of current user"
-              aria-controls={menuId}
-              aria-haspopup="true"
-              onClick={handleProfileMenuOpen}
-              color="inherit"
-            >
-              <AccountCircle />
-            </IconButton>
-          </div>
-          <div className={classes.sectionMobile}>
-            <IconButton
-              aria-label="show more"
-              aria-controls={mobileMenuId}
-              aria-haspopup="true"
-              onClick={handleMobileMenuOpen}
-              color="inherit"
-            >
-              <MoreIcon />
-            </IconButton>
-          </div>
-        </Toolbar>
-      </AppBar>
-      {renderMobileMenu}
-      {renderMenu}
-    </div>
+    <>
+      {isAuth && (
+        <div className={navbarStyles.navbar}>
+          <AppBar position="static">
+            <Toolbar>
+              <Typography className={classes.title} variant="h6" noWrap>
+                WS IMOBILIÁRIA
+              </Typography>
+              <div className={classes.grow} />
+              <div className={classes.sectionDesktop}>
+                <IconButton
+                  aria-label="show 17 new notifications"
+                  color="inherit"
+                >
+                  <Badge
+                    badgeContent={notificationInfo.length}
+                    color="secondary"
+                  >
+                    <NotificationsIcon />
+                  </Badge>
+                </IconButton>
+                <IconButton
+                  edge="end"
+                  aria-label="account of current user"
+                  aria-controls={menuId}
+                  aria-haspopup="true"
+                  onClick={handleProfileMenuOpen}
+                  color="inherit"
+                >
+                  <AccountCircle />
+                </IconButton>
+              </div>
+              <div className={classes.sectionMobile}>
+                <IconButton
+                  aria-label="show more"
+                  aria-controls={mobileMenuId}
+                  aria-haspopup="true"
+                  onClick={handleMobileMenuOpen}
+                  color="inherit"
+                >
+                  <MoreIcon />
+                </IconButton>
+              </div>
+            </Toolbar>
+          </AppBar>
+          {renderMobileMenu}
+          {renderMenu}
+        </div>
+      )}
+    </>
   );
 }

@@ -1,0 +1,27 @@
+.mainContainer {
+  padding: 10px 10px 10px 10px;
+  margin-top: 50px !important;
+  flex-wrap: wrap !important;
+}
+.drawerButtonMoved,
+.drawerButtonClosed {
+  position: fixed !important;
+  top: 49vh;
+  background-color: white !important;
+  border-radius: 50px 0px 0px 50px !important;
+}
+
+.drawerButtonMoved {
+  right: 500px;
+}
+.drawerButtonClosed {
+  right: 5px;
+}
+.registryForm {
+  padding: 10px;
+}
+.registryImg{
+  width: 100%;
+  margin-bottom: 15px;
+  padding: 1px;
+}

@@ -1,0 +1,6 @@
+.buttonBase{
+    width: 100%;
+}
+.activeCard{
+    border: 5px solid red;
+}

@@ -3,12 +3,16 @@ import * as Types from '../types';
 const initialState = {
     filters: {
         withPhotos: (property) => property.imagemImovelDtoList.length > 0,
-        withPriceRange: (property, min, max) => property.preco >= min && property.preco <= max
+        withPriceRange: (property, min, max) => property.preco >= min && property.preco <= max,
+        withContact: (property, id) => property.proprietario.id === id
     },
     status: {
         withPhotos: false,
-        withPriceRange: false
-    }
+        withPriceRange: true,
+        withContact: false
+    },
+    orderBy: { field: "preco", orientation: "asc" },
+    priceRange: { min: 1000, max: 2000 }
 };
 
 const FilterReducer = (state = initialState, action) => {
@@ -20,6 +24,16 @@ const FilterReducer = (state = initialState, action) => {
                     ...state.status,
                     ...action.payload
                 }
+            }
+        case Types.SET_ORDER:
+            return {
+                ...state,
+                orderBy: action.payload
+            }
+        case Types.SET_PRICE_RANGE:
+            return {
+                ...state,
+                priceRange: action.payload
             }
         default:
             return { ...state };
