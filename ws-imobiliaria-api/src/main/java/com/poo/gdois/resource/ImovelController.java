@@ -25,6 +25,4 @@ public interface ImovelController {
     @DeleteMapping(path = "/{id}")
     ResponseEntity<?> delete(@PathVariable Long id);
 
-    //TODO: JOB PRA DIZER SE TA ATIVO OU NAO
-
 }
