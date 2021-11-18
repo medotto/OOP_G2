@@ -16,7 +16,7 @@ import { useRouter } from "next/router";
 
 const theme = createTheme();
 
-export default function LoginCard() {
+export default function SignUpCard(props) {
   const router = useRouter();
   const [facebookLoginClick, setFacebookLoginClick] = useState(false);
   const handleSubmit = (event) => {
@@ -30,7 +30,11 @@ export default function LoginCard() {
   useEffect(() => {
     sessionStorage.clear();
   }, []);
-  
+
+  const handleChange = (event) => {
+    props.setUserRole(event.target.id);
+  };
+
   return (
     // <ThemeProvider theme={theme}>
     <Grid container justifyContent="center" component="main">
@@ -55,7 +59,7 @@ export default function LoginCard() {
               <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5">
-              Entrar
+              Cadastrar-se
             </Typography>
             <Box component="form" noValidate onSubmit={handleSubmit}>
               <TextField
@@ -79,8 +83,24 @@ export default function LoginCard() {
                 autoComplete="current-password"
               />
               <FormControlLabel
-                control={<Checkbox value="remember" color="primary" />}
-                label="Lembrar"
+                control={
+                  <Checkbox
+                    checked={props.userRole == 2}
+                    id="2"
+                    onChange={handleChange}
+                  />
+                }
+                label="Aprovador"
+              />{" "}
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={props.userRole == 3}
+                    id="3"
+                    onChange={handleChange}
+                  />
+                }
+                label="Cadastrador"
               />
               <Grid
                 container
@@ -94,7 +114,7 @@ export default function LoginCard() {
                   color="primary"
                   style={{ width: "205px" }}
                 >
-                  ENTRAR
+                  Cadastrar-se
                 </Button>
                 <SocialMediaAuth />
               </Grid>

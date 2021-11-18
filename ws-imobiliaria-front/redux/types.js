@@ -6,3 +6,4 @@ export const SET_FILTERS = "SET_FILTER_WITH_PHOTOS";
 export const SET_ORDER = "SET_ORDER";
 export const SET_PRICE_RANGE = "SET_PRICE_RANGE";
 export const SET_ACTIVE_PROPERTY = "SET_ACTIVE_PROPERTY";
+export const SET_USER_TOKEN = "SET_USER_TOKEN";

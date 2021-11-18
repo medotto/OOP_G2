@@ -1,6 +1,7 @@
 import React from "react";
 import firebase from "../firebase/clientApp";
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
+import 'firebaseui/dist/firebaseui.css'
 
 const provider = new firebase.auth.GoogleAuthProvider();
 provider.setCustomParameters({ prompt: "select_account" });
@@ -16,6 +17,6 @@ const uiConfig = {
 
 export const SocialMediaAuth = () => {
   return (
-    <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
+    <StyledFirebaseAuth  uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
   );
 };

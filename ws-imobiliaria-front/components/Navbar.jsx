@@ -110,7 +110,7 @@ export default function Navbar() {
   }, [isAuth]);
 
   useEffect(()=>{
-    setIsAuth(!router.pathname.includes("Login"))
+    setIsAuth(!router.pathname.includes("Login") && !router.pathname.includes("SignUp") )
   },[router.pathname])
 
   const menuId = "primary-search-account-menu";

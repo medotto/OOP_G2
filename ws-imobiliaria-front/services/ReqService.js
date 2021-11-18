@@ -1,16 +1,34 @@
 const setHeaderProp = (header, propName, propValue) => header[propName] = propValue;
 import Store from "../redux/store/Store";
 import * as ToasterActions from "../redux/actions/ToasterActions";
+import ApyType from "./ApiType";
 
-export const assembleAPIAddress = (endpoint) => {
-    return `${process.env.API_ADDRESS}:${process.env.API_PORT}/${endpoint}`
+export const assembleAPIAddress = (apiType, endpoint) => {
+    let apiAddressWithPort = `${process.env.API_BASE_HOST}`
+
+    switch (apiType) {
+        case "IMOBILIARIA":
+            apiAddressWithPort += `:${process.env.API_PORT}${process.env.API_ADDRESS}/${endpoint}`;
+            break;
+        case "USER":
+            apiAddressWithPort += `:${process.env.USER_PORT}${process.env.USER_ADDRESS}/${endpoint}`;
+            break;
+        case "OAUTH":
+            apiAddressWithPort += `:${process.env.AUTH_PORT}${process.env.AUTH_ADDRESS}/${endpoint}`;
+            break;
+        default:
+            apiAddressWithPort += `:${process.env.API_PORT}${process.env.API_ADDRESS}/${endpoint}`;
+            break;
+    }
+    return apiAddressWithPort;
 }
+
 /**
  * Makes a request to API. Receives the requisition url on path, the data, the req method and 
  * req headers (optional)
  * @constructor
  */
-const DoRequest = async (endpoint, data, method, hasAuth = true, headers = {}) => {
+const DoRequest = async (apiType, endpoint, data, method, hasAuth = true, headers = {}) => {
 
     var requestConfig = {
         method: method,
@@ -25,12 +43,9 @@ const DoRequest = async (endpoint, data, method, hasAuth = true, headers = {}) =
         setHeaderProp(requestConfig.headers, "Content-Type", "application/json");
         setHeaderProp(requestConfig.headers, "Accept", "*");
         setHeaderProp(requestConfig.headers, "Connection", "keep-alive");
-        setHeaderProp(requestConfig.headers, "Access-Control-Allow-Origin", "*");
-        setHeaderProp(requestConfig.headers, "Access-Control-Allow-Methods", "DELETE, POST, GET, OPTIONS");
-        setHeaderProp(requestConfig.headers, "Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
     }
 
-    let result = await fetch(assembleAPIAddress(endpoint), requestConfig)
+    let result = await fetch(assembleAPIAddress(apiType, endpoint), requestConfig)
         .then((resp) => resp.json())
         .then(resp => resp);
 
