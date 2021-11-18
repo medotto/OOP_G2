@@ -1,3 +1,48 @@
+CREATE SCHEMA `usuarios` DEFAULT CHARACTER SET utf8 ;
+
+CREATE TABLE `usuarios`.`user` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(120) NOT NULL,
+  `email` VARCHAR(120) NOT NULL,
+  `password` VARCHAR(4000) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `email_UNIQUE` (`email` ASC))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE `usuarios`.`role` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(120) NOT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+insert into role(nome) values ('ADMIN');
+insert into role(nome) values ('APROVADOR');
+insert into role(nome) values ('CADASTRADOR');
+
+CREATE TABLE `usuarios`.`user_role` (
+  `id_user` INT NOT NULL,
+  `id_role` INT NOT NULL,
+  INDEX `id_user_idx` (`id_user` ASC),
+  INDEX `id_role_idx` (`id_role` ASC),
+  CONSTRAINT `id_user`
+    FOREIGN KEY (`id_user`)
+    REFERENCES `usuarios`.`user` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `id_role`
+    FOREIGN KEY (`id_role`)
+    REFERENCES `usuarios`.`role` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+////////////////////////////////////////////////////////////////////////////////
+
+CREATE SCHEMA `imobiliaria` DEFAULT CHARACTER SET utf8 ;
+
 CREATE TABLE `IMOBILIARIA`.`SITUACAO_IMOVEL` (
   `ID` INT NOT NULL AUTO_INCREMENT,
   `SITUACAO` VARCHAR(45) NOT NULL,
@@ -30,8 +75,8 @@ CREATE TABLE `IMOBILIARIA`.`IMOVEL` (
   `FL_FINANCIADO` CHAR(1) NULL,
   `FL_PROPRIETARIO` CHAR(1) NULL,
   `FL_NEGOCIACAO` CHAR(1) NULL,
-  `DT_CADASTRO` DATE NULL,
-  `DT_ALTERACAO` DATE NULL,
+  `DT_CADASTRO` DATETIME NULL,
+  `DT_ALTERACAO` DATETIME NULL,
   PRIMARY KEY (`ID`),
   INDEX `ID_SITUACAO_IDX` (`ID_SITUACAO` ASC),
   INDEX `PROPRIETARIO_IDX` (`ID_PROPRIETARIO` ASC),
