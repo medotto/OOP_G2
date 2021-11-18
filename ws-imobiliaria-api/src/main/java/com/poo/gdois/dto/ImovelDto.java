@@ -56,10 +56,12 @@ public class ImovelDto {
 
     private List<ImagemImovelDto> imagemImovelDtoList;
 
-    @JsonFormat(pattern = "dd/MM/yyyy hh:mm:ss")
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     private LocalDateTime dtCadastro;
 
-    @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss", timezone = "GTM-3")
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     private LocalDateTime dtAlteracao;
+
+    private String flInativo;
 
 }

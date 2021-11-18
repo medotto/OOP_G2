@@ -66,6 +66,9 @@ public class ImovelFactory {
                 .flFinanciado(entity.getFlFinanciado())
                 .flProprietario(entity.getFlProprietario())
                 .flNegociacao(entity.getFlNegociacao())
+                .flInativo(entity.getFlInativo())
+                .dtAlteracao(entity.getDtAlteracao())
+                .dtCadastro(entity.getDtCadastro())
                 .build();
     }
 

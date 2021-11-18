@@ -34,6 +34,7 @@ public class ImovelServiceImpl implements ImovelService {
         Imovel entity = ImovelFactory.createEntityFrom(dto);
 
         entity.setDtCadastro(LocalDateTime.now());
+        entity.setFlInativo("N");
         entity = imovelRepository.save(entity);
 
         final long idImovel = entity.getId();
@@ -46,7 +47,7 @@ public class ImovelServiceImpl implements ImovelService {
     @Override
     public void update(ImovelDto dto) {
         Imovel entity = ImovelFactory.createEntityFrom(dto);
-
+        entity.setFlInativo("N");
         entity.setDtAlteracao(LocalDateTime.now());
         imovelRepository.save(entity);
     }

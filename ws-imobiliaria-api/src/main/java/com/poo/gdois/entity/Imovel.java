@@ -70,4 +70,8 @@ public class Imovel {
     @NotAudited
     private LocalDateTime dtAlteracao;
 
+    @Column(name = "FL_INATIVO")
+    @NotAudited
+    private String flInativo;
+
 }
