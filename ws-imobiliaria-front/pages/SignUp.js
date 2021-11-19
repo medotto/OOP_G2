@@ -27,45 +27,45 @@ const SignUp = () => {
     console.log(user)
   }, [user])
 
-  // useEffect(() => {
-  //   if (user?.emailVerified) {
-  //     const searchUser = async () => {
-  //       return await DoRequest(
-  //         "USER",
-  //         `users/search?email=${user.email}`,
-  //         {},
-  //         "GET",
-  //         false
-  //       );
-  //     }
-  //     const signUpUser = async () => {
-  //       return await DoRequest(
-  //         "USER",
-  //         "users",
-  //         {
-  //           nome: user.displayName,
-  //           email: user.email,
-  //           password: user.email,
-  //           roleList: [{
-  //             id: userRole
-  //           }]
-  //         },
-  //         "POST",
-  //         false
-  //       );
-  //     }
-  //     searchUser()
-  //       .then((resp) => {
-  //         router.push("/PropertySearch");
-  //       })
-  //       .catch(() => {
-  //         signUpUser()
-  //           .then((resp) => {
-  //             router.push("/PropertySearch");
-  //           })
-  //       });
-  //   }
-  // }, [user])
+  useEffect(() => {
+    if (user?.emailVerified) {
+      const searchUser = async () => {
+        return await DoRequest(
+          "USER",
+          `users/search?email=${user.email}`,
+          {},
+          "GET",
+          false
+        );
+      }
+      const signUpUser = async () => {
+        return await DoRequest(
+          "USER",
+          "users",
+          {
+            nome: user.displayName,
+            email: user.email,
+            password: user.email,
+            roleList: [{
+              id: userRole
+            }]
+          },
+          "POST",
+          false
+        );
+      }
+      searchUser()
+        .then((resp) => {
+          router.push("/PropertySearch");
+        })
+        .catch(() => {
+          signUpUser()
+            .then((resp) => {
+              router.push("/PropertySearch");
+            })
+        });
+    }
+  }, [user])
 
   return (
     <>

@@ -27,9 +27,9 @@ export default function SignUpCard(props) {
     router.push("/PropertySearch");
   };
 
-  useEffect(() => {
-    sessionStorage.clear();
-  }, []);
+  // useEffect(() => {
+  //   sessionStorage.clear();
+  // }, []);
 
   const handleChange = (event) => {
     props.setUserRole(event.target.id);

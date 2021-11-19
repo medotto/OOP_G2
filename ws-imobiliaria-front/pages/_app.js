@@ -4,6 +4,7 @@ import { createWrapper } from 'next-redux-wrapper';
 import Store from '../redux/store/Store';
 import NavBar from '../components/Navbar';
 import React from 'react';
+import Toaster from "../components/Snackbar";
 
 function App({ Component, pageProps }) {
   return (
@@ -11,7 +12,7 @@ function App({ Component, pageProps }) {
       <Provider store={Store}>
         <NavBar />
         <Component {...pageProps} />
-        {/* <Toaster /> */}
+        <Toaster />
       </Provider>
     </>
   )

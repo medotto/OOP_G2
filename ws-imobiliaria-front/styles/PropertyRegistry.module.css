@@ -20,8 +20,28 @@
 .registryForm {
   padding: 10px;
 }
-.registryImg{
-  width: 100%;
+.registryImg {
   margin-bottom: 15px;
-  padding: 1px;
+  padding: 10px;
+  max-height: 220px !important;
+}
+.precoInput,
+.field {
+  margin-bottom: 15px !important;
+}
+.saveButton,
+.undoButton {
+  height: 50px;
+  width: 100%;
+  margin-top: 15px !important;
+}
+.saveButton {
+  background-color: green !important;
+  color: white !important;
+}
+.precoInput {
+  margin: 10px 10px 20px 10px !important;
+}
+.checkboxes{
+  margin: -10px -5px -10px -10px !important;
 }

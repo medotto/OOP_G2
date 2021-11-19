@@ -105,9 +105,9 @@ export default function Navbar() {
   useEffect(() => {
   }, [notificationInfo]);
 
-  useEffect(() => {
-    if (!isAuth) router.push("/Login");
-  }, [isAuth]);
+  // useEffect(() => {
+  //   if (!isAuth) router.push("/Login");
+  // }, [isAuth]);
 
   useEffect(()=>{
     setIsAuth(!router.pathname.includes("Login") && !router.pathname.includes("SignUp") )
