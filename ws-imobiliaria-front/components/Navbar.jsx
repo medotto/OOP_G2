@@ -102,16 +102,17 @@ export default function Navbar() {
 
   const notificationInfo = useSelector((state) => state.NotificationReducer);
 
-  useEffect(() => {
-  }, [notificationInfo]);
+  useEffect(() => {}, [notificationInfo]);
 
   // useEffect(() => {
   //   if (!isAuth) router.push("/Login");
   // }, [isAuth]);
 
-  useEffect(()=>{
-    setIsAuth(!router.pathname.includes("Login") && !router.pathname.includes("SignUp") )
-  },[router.pathname])
+  useEffect(() => {
+    setIsAuth(
+      !router.pathname.includes("Login") && !router.pathname.includes("SignUp")
+    );
+  }, [router.pathname]);
 
   const menuId = "primary-search-account-menu";
   const renderMenu = (
@@ -123,6 +124,7 @@ export default function Navbar() {
       transformOrigin={{ vertical: "top", horizontal: "right" }}
       open={isMenuOpen}
       onClose={handleMenuClose}
+      style={{ zIndex: 100001 }}
     >
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
       <MenuItem onClick={handleMenuClose}>My account</MenuItem>
@@ -191,6 +193,7 @@ export default function Navbar() {
                   aria-haspopup="true"
                   onClick={handleProfileMenuOpen}
                   color="inherit"
+                  style={{ zIndex: 100001 }}
                 >
                   <AccountCircle />
                 </IconButton>

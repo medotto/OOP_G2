@@ -73,3 +73,14 @@ export function QuickSort(items, left, right, orderBy, orientation) {
     }
     return items;
 }
+
+export function formatUrlEncodedForm(details) {
+    var formBody = [];
+    for (var property in details) {
+        var encodedKey = encodeURIComponent(property);
+        var encodedValue = encodeURIComponent(details[property]);
+        formBody.push(encodedKey + "=" + encodedValue);
+    }
+    formBody = formBody.join("&");
+    return formBody;
+}

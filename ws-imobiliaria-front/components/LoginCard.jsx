@@ -16,21 +16,25 @@ import { useRouter } from "next/router";
 
 const theme = createTheme();
 
-export default function LoginCard() {
+export default function LoginCard(props) {
   const router = useRouter();
   const [facebookLoginClick, setFacebookLoginClick] = useState(false);
+
+  const handleChange = (event) => {
+    props.getValidationForm({
+      ...props.currentForm,
+      [event.target.name]: event.target.value,
+    });
+  };
   const handleSubmit = (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    // eslint-disable-next-line no-console
-    sessionStorage.setItem("auth", true);
-    router.push("/PropertySearch");
-  };
+    props.hasSubmited(true);
+  }
 
   useEffect(() => {
     sessionStorage.clear();
   }, []);
-  
+
   return (
     // <ThemeProvider theme={theme}>
     <Grid container justifyContent="center" component="main">
@@ -57,7 +61,11 @@ export default function LoginCard() {
             <Typography component="h1" variant="h5">
               Entrar
             </Typography>
-            <Box component="form" noValidate onSubmit={handleSubmit}>
+            <Box
+              component="form"
+              noValidate
+              onSubmit={handleSubmit}
+            >
               <TextField
                 margin="normal"
                 required
@@ -67,6 +75,7 @@ export default function LoginCard() {
                 name="email"
                 autoComplete="email"
                 autoFocus
+                onChange={handleChange}
               />
               <TextField
                 margin="normal"
@@ -76,6 +85,7 @@ export default function LoginCard() {
                 label="Senha"
                 type="password"
                 id="password"
+                onChange={handleChange}
                 autoComplete="current-password"
               />
               <FormControlLabel

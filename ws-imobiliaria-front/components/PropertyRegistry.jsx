@@ -131,9 +131,6 @@ export default function PropertyRegistry(props) {
   const handleSaveChanges = () => {
     //TODO -> Implement
   };
-  useEffect(() => {
-    console.log(values);
-  }, [values]);
 
   useEffect(() => {
     if (!props.open) setValues(null);

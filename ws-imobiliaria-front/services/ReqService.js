@@ -1,4 +1,4 @@
-const setHeaderProp = (header, propName, propValue) => header[propName] = propValue;
+export const setHeaderProp = (header, propName, propValue) => header[propName] = propValue;
 import Store from "../redux/store/Store";
 import * as ToasterActions from "../redux/actions/ToasterActions";
 import ApyType from "./ApiType";
@@ -28,8 +28,7 @@ export const assembleAPIAddress = (apiType, endpoint) => {
  * req headers (optional)
  * @constructor
  */
-const DoRequest = async (apiType, endpoint, data, method, hasAuth = true, headers = {}) => {
-
+const DoRequest = async (apiType, endpoint, data, method, hasAuth = true, headers = {}, token = null) => {
     var requestConfig = {
         method: method,
         headers: headers,
@@ -39,10 +38,23 @@ const DoRequest = async (apiType, endpoint, data, method, hasAuth = true, header
     if (method !== "GET")
         requestConfig.body = JSON.stringify(data);
 
-    if (Object.entries(requestConfig.headers) == 0) {
+    if (Object.entries(requestConfig.headers) == 0)
         setHeaderProp(requestConfig.headers, "Content-Type", "application/json");
-        setHeaderProp(requestConfig.headers, "Accept", "*");
-        setHeaderProp(requestConfig.headers, "Connection", "keep-alive");
+
+    setHeaderProp(requestConfig.headers, "Accept", "*");
+    setHeaderProp(requestConfig.headers, "Connection", "keep-alive");
+
+    if (hasAuth) {
+        if (apiType === "OAUTH") {
+            setHeaderProp(requestConfig.headers, "Authorization", `Basic ${window.btoa(process.env.API_BASIC_AUTH_USER
+                + ":" +
+                process.env.API_BASIC_AUTH_PASSWORD)}`);
+        } else if (token) {
+            requestConfig.headers = {
+                ...requestConfig.headers,
+                "Authorization": `Bearer ${token}`
+            }
+        }
     }
 
     let result = await fetch(assembleAPIAddress(apiType, endpoint), requestConfig)
@@ -52,11 +64,16 @@ const DoRequest = async (apiType, endpoint, data, method, hasAuth = true, header
     switch (result.status) {
         case 500:
             Store.dispatch(ToasterActions.PushToaster("error", result.body));
+        case 400:
+            Store.dispatch(ToasterActions.PushToaster("error", "Credenciais incorretas."));
+            break;
         case 401:
             Store.dispatch(ToasterActions.PushToaster("error", "User unauthorized."));
             break;
         default: return result;
     }
+
+    debugger;
 
     return result;
 }
