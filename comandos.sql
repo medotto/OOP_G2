@@ -5,6 +5,7 @@ CREATE TABLE `usuarios`.`user` (
   `nome` VARCHAR(120) NOT NULL,
   `email` VARCHAR(120) NOT NULL,
   `password` VARCHAR(4000) NOT NULL,
+  `st_ativo` CHAR(1) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `email_UNIQUE` (`email` ASC))
 ENGINE = InnoDB

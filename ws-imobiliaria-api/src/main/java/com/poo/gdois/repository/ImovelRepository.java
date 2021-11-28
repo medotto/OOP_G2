@@ -13,4 +13,6 @@ public interface ImovelRepository extends JpaRepository<Imovel, Long> {
             "or (dt_alteracao <= (NOW() - INTERVAL 4 DAY)))", nativeQuery = true)
     List<Imovel> findAllHavingNinetyDaysFromLastChange();
 
+    List<Imovel> findAllByOwner(String owner);
+
 }

@@ -16,4 +16,6 @@ public interface ImovelService {
 
     void deleteById(Long id);
 
+    List<ImovelDto> findAllByOwner(String owner);
+
 }

@@ -37,4 +37,7 @@ public class User {
     )
     private List<Role> roleList = new ArrayList<>();
 
+    @Column(name = "ST_ATIVO")
+    private String stAtivo;
+
 }

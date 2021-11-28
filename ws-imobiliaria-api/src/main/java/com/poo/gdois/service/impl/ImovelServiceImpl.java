@@ -78,4 +78,15 @@ public class ImovelServiceImpl implements ImovelService {
         imovelRepository.deleteById(id);
     }
 
+    @Override
+    public List<ImovelDto> findAllByOwner(String owner) {
+        var imoveis = imovelRepository.findAllByOwner(owner);
+        if(!imoveis.isEmpty()) {
+            return imoveis.stream()
+                    .map(ImovelFactory::createDtoFrom)
+                    .collect(Collectors.toList());
+        }
+        return new ArrayList<>();
+    }
+
 }

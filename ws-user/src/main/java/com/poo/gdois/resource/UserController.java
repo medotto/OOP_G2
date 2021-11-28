@@ -26,4 +26,10 @@ public class UserController extends AbstractController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @PutMapping
+    public ResponseEntity<?> update(@RequestBody User user) {
+        userService.update(user);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
 }

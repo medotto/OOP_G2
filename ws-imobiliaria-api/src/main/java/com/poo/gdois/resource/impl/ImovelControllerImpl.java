@@ -47,4 +47,10 @@ public class ImovelControllerImpl extends AbstractController implements ImovelCo
         return ResponseEntity.ok().build();
     }
 
+    @Override
+    public ResponseEntity<List<ImovelDto>> findAllByOwner(String owner) {
+        var imovelList = imovelService.findAllByOwner(owner);
+        return buildSuccessOrNoContentResponse(imovelList);
+    }
+
 }

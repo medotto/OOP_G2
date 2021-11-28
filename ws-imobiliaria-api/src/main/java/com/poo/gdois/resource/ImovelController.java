@@ -25,4 +25,7 @@ public interface ImovelController {
     @DeleteMapping(path = "/{id}")
     ResponseEntity<?> delete(@PathVariable Long id);
 
+    @GetMapping(path = "/owner/{owner}")
+    ResponseEntity<List<ImovelDto>> findAllByOwner(@PathVariable String owner);
+
 }
