@@ -18,4 +18,6 @@ public interface ImovelService {
 
     List<ImovelDto> findAllByOwner(String owner);
 
+    List<ImovelDto> getImovelAuditoria(Long id);
+
 }

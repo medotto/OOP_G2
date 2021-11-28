@@ -28,4 +28,7 @@ public interface ImovelController {
     @GetMapping(path = "/owner/{owner}")
     ResponseEntity<List<ImovelDto>> findAllByOwner(@PathVariable String owner);
 
+    @GetMapping(path = "/{id}/auditoria")
+    ResponseEntity<List<ImovelDto>> getImovelAuditoria(@PathVariable Long id);
+
 }

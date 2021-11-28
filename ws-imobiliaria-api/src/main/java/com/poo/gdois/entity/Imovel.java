@@ -51,6 +51,7 @@ public class Imovel {
     private Proprietario proprietario;
 
     @OneToMany(mappedBy = "idImovel", cascade = CascadeType.REMOVE)
+    @NotAudited
     private List<ImagemImovel> imagemImovelList;
 
     @Column(name = "FL_FINANCIADO")

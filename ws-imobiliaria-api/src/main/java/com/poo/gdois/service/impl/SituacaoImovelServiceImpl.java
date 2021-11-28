@@ -28,4 +28,10 @@ public class SituacaoImovelServiceImpl implements SituacaoImovelService {
         return mapper.mapToDtoList(situacaoImovelList, DTO_CLASS);
     }
 
+    @Override
+    public void create(SituacaoImovelDto dto) {
+        SituacaoImovel entity = mapper.mapToEntity(dto, ENTITY_CLASS);
+        situacaoImovelRepository.save(entity);
+    }
+
 }

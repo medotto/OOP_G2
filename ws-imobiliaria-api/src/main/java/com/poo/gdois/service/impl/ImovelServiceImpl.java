@@ -7,9 +7,14 @@ import com.poo.gdois.mapper.Mapper;
 import com.poo.gdois.repository.ImagemImovelRepository;
 import com.poo.gdois.repository.ImovelRepository;
 import com.poo.gdois.service.ImovelService;
+import org.hibernate.envers.AuditReader;
+import org.hibernate.envers.AuditReaderFactory;
+import org.hibernate.envers.query.AuditEntity;
+import org.hibernate.envers.query.AuditQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,6 +33,9 @@ public class ImovelServiceImpl implements ImovelService {
 
     @Autowired
     private Mapper<ImovelDto, Imovel> mapper;
+
+    @Autowired
+    private EntityManager entityManager;
 
     @Override
     public void create(ImovelDto dto) {
@@ -87,6 +95,18 @@ public class ImovelServiceImpl implements ImovelService {
                     .collect(Collectors.toList());
         }
         return new ArrayList<>();
+    }
+
+    @Override
+    public List<ImovelDto> getImovelAuditoria(Long id) {
+        AuditReader auditReader = AuditReaderFactory.get(entityManager);
+        AuditQuery auditQuery = auditReader.createQuery()
+                .forRevisionsOfEntity(Imovel.class, true, true)
+                .add(AuditEntity.id().eq(id));
+        List<Imovel> resultList = auditQuery.getResultList();
+        return resultList.stream()
+                .map(ImovelFactory::createDtoFrom)
+                .collect(Collectors.toList());
     }
 
 }

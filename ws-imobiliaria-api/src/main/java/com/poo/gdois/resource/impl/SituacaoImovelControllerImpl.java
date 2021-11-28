@@ -5,6 +5,7 @@ import com.poo.gdois.resource.AbstractController;
 import com.poo.gdois.resource.SituacaoImovelController;
 import com.poo.gdois.service.SituacaoImovelService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,6 +20,12 @@ public class SituacaoImovelControllerImpl extends AbstractController implements 
     @Override
     public ResponseEntity<List<SituacaoImovelDto>> findAll() {
         return ResponseEntity.ok(situacaoImovelService.findAll());
+    }
+
+    @Override
+    public ResponseEntity<?> create(SituacaoImovelDto dto) {
+        situacaoImovelService.create(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 }

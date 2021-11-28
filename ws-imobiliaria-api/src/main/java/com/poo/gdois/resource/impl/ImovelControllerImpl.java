@@ -53,4 +53,9 @@ public class ImovelControllerImpl extends AbstractController implements ImovelCo
         return buildSuccessOrNoContentResponse(imovelList);
     }
 
+    @Override
+    public ResponseEntity<List<ImovelDto>> getImovelAuditoria(Long id) {
+        return  buildSuccessOrNoContentResponse(imovelService.getImovelAuditoria(id));
+    }
+
 }

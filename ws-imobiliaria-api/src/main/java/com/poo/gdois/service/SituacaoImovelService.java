@@ -8,4 +8,6 @@ public interface SituacaoImovelService {
 
     List<SituacaoImovelDto> findAll();
 
+    void create(SituacaoImovelDto dto);
+
 }
