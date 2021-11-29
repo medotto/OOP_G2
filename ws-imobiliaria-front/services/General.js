@@ -84,3 +84,7 @@ export function formatUrlEncodedForm(details) {
     formBody = formBody.join("&");
     return formBody;
 }
+
+export function formatBase64forApi(base64) {
+    return String(base64).substring(base64.indexOf(",") + 1, base64.length)
+}

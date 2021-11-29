@@ -40,8 +40,23 @@
   color: white !important;
 }
 .precoInput {
-  margin: 10px 10px 20px 10px !important;
+  /* margin: 10px 10px 20px 10px !important; */
 }
 .checkboxes{
   margin: -10px -5px -10px -10px !important;
+}
+.ownerLabel{
+  background-color: transparent !important;
+}
+.phoneInput{
+}
+.ownerFormControl,
+.ownerSelect,
+.ownerLabel,
+.phoneInput,
+.maxWidth{
+  width: 100%;
+}
+.ownerFormControl{
+  margin-right: 10px !important;
 }

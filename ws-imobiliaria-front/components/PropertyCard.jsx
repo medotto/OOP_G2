@@ -9,6 +9,8 @@ import { ButtonBase, Grid } from "@material-ui/core";
 import { phoneNumberFormatter } from "../services/General";
 import propertyCardStyles from "../styles/PropertyCard.module.css";
 import { useSelector } from "react-redux";
+import ReportProblemSharpIcon from "@material-ui/icons/ReportProblemSharp";
+import Tooltip from "@material-ui/core/Tooltip";
 
 export default function PropertyCard(props) {
   const [isActive, setIsActive] = React.useState(false);
@@ -58,6 +60,16 @@ export default function PropertyCard(props) {
               <Typography variant="body2">
                 {phoneNumberFormatter(props.data.proprietario.telefone)}
               </Typography>
+              {!props.data.flInativo && (
+                <Tooltip
+                  title="A propriedade não foi atualizada há mais de 90 dias!"
+                  aria-label="add"
+                >
+                  <ReportProblemSharpIcon
+                    className={propertyCardStyles.alertIcon}
+                  />
+                </Tooltip>
+              )}
             </CardContent>
           </Grid>
         </ButtonBase>

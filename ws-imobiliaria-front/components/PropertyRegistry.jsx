@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Drawer from "@material-ui/core/Drawer";
 import Divider from "@material-ui/core/Divider";
 import { Grid } from "@material-ui/core";
@@ -7,7 +7,6 @@ import { FormControl, FormGroup } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch, useSelector } from "react-redux";
 import TextField from "@material-ui/core/TextField";
-import Typography from "@material-ui/core/Typography";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import Button from "@material-ui/core/Button";
@@ -16,6 +15,13 @@ import SaveRoundedIcon from "@material-ui/icons/SaveRounded";
 import NumberFormat from "react-number-format";
 import PropTypes from "prop-types";
 import * as ToasterActions from "../redux/actions/ToasterActions";
+import Upload from "../components/ImageComponent/ImageUpload";
+import OwnerSelector from "./OwnerSelector";
+import SituationSelector from "./SituationSelector";
+import { postProperty, editProperty } from "../services/ImobiliariaService";
+import { formatBase64forApi } from "../services/General";
+import CarouselPreview from "./ImageComponent/CarouselPreview";
+import * as PropertyActions from "../redux/actions/PropertyActions";
 
 const drawerWidth = 500;
 function NumberFormatCustom(props) {
@@ -100,19 +106,80 @@ const useStyles = makeStyles((theme) => ({
     marginRight: 0,
   },
 }));
-
+const initialValues = {
+  bairro: "",
+  cidade: "",
+  dtAlteracao: null,
+  dtCadastro: "",
+  endereco: "",
+  flFinanciado: "N",
+  flInativo: "N",
+  flNegociacao: "N",
+  flProprietario: "N",
+  imagemImovelDtoList: [],
+  owner:"",
+  pais: "",
+  preco: 0,
+  proprietario: { id: -1 },
+  situacao: { id: -1 },
+};
 export default function PropertyRegistry(props) {
   const dispatch = useDispatch();
   const classes = useStyles();
-  const [currentProperty, setCurrentProperty] = React.useState(null);
+  const [currentProperty, setCurrentProperty] = useState(null);
+  const [selectedOwner, setOwner] = useState({});
+  const [images, setImages] = useState([]);
+  const [selectedSituation, setSituation] = useState({});
+  const [registerDateSize, setRegisterDateSize] = useState(12);
   const propertyInfos = useSelector((store) => store.PropertyReducer);
-  const [values, setValues] = React.useState(null);
+  const userSelector = useSelector((state) => state.UserReducer);
+  const addingImageSelector = useSelector((state) => state.addingImageSelector);
 
+  const [values, setValues] = useState(initialValues);
+
+  //#region Effects
   useEffect(() => {
+    if (propertyInfos?.activeProperty?.dtAlteracao) setRegisterDateSize(6);
     setCurrentProperty(propertyInfos.activeProperty);
     setValues(propertyInfos.activeProperty);
   }, [propertyInfos]);
 
+  useEffect(() => {
+    if (props.open?.origin === "add") setValues(initialValues);
+  }, [props.open]);
+
+  useEffect(() => {
+    if (selectedOwner)
+      setValues({
+        ...values,
+        proprietario: { id: selectedOwner },
+      });
+  }, [selectedOwner]);
+
+  useEffect(() => {
+    if (selectedSituation)
+      setValues({
+        ...values,
+        situacao: { id: selectedSituation },
+      });
+  }, [selectedSituation]);
+
+  useEffect(() => {
+    if (selectedSituation)
+      setValues({
+        ...values,
+        imagemImovelDtoList: images.map((image, index) => {
+          return { id: index, imagemBase64: formatBase64forApi(image.base64) };
+        }),
+      });
+  }, [images]);
+
+  useEffect(() => {
+    console.log(currentProperty);
+  }, [currentProperty]);
+
+  //#endregion
+  //#region Internal handlers
   const handleChange = (event) => {
     setValues({ ...values, [event.target.name]: event.target.value });
   };
@@ -129,19 +196,35 @@ export default function PropertyRegistry(props) {
     );
   };
   const handleSaveChanges = () => {
-    //TODO -> Implement
+    switch (props.open?.origin) {
+      case "add":
+        postProperty(
+          values,
+          userSelector.token ||
+            JSON.parse(sessionStorage.getItem("userCredentials")).access_token
+        );
+        break;
+      case "edit":
+        editProperty(
+          { ...values, id: currentProperty.id },
+          userSelector.token ||
+            JSON.parse(sessionStorage.getItem("userCredentials")).access_token
+        );
+        break;
+      default:
+        break;
+    }
+    dispatch(PropertyActions.RefreshProperties(true));
   };
 
-  useEffect(() => {
-    if (!props.open) setValues(null);
-  }, [props.open]);
+  //#endregion
 
   return (
     <Drawer
       className={classes.drawer}
       variant="persistent"
       anchor="right"
-      open={props.open}
+      open={props.open.value}
       classes={{
         paper: classes.drawerPaper,
       }}
@@ -157,25 +240,57 @@ export default function PropertyRegistry(props) {
         className={propertyRegistryStyles.filterGrid}
       >
         <Divider />
-        {currentProperty && (
-          <FormControl component="fieldset">
-            <img
-              src={
-                currentProperty?.imagemImovelDtoList[0]
-                  ? "data:image/png;base64," +
-                    currentProperty?.imagemImovelDtoList[0].imagemBase64
-                  : "https://django-metabuscador.s3.amazonaws.com/static/home/images/no-photo.png"
-              }
+        <FormControl component="fieldset">
+          {currentProperty && (
+            <>
+              {currentProperty?.imagemImovelDtoList.length <= 1 && (
+                <img
+                  src={
+                    currentProperty?.imagemImovelDtoList[0]
+                      ? "data:image/png;base64," +
+                        currentProperty?.imagemImovelDtoList[0].imagemBase64
+                      : "https://django-metabuscador.s3.amazonaws.com/static/home/images/no-photo.png"
+                  }
+                  className={propertyRegistryStyles.registryImg}
+                />
+              )}
+              {currentProperty?.imagemImovelDtoList.length > 1 && (
+                <CarouselPreview
+                  images={
+                    currentProperty?.imagemImovelDtoList[0]
+                      ? currentProperty?.imagemImovelDtoList.map((imagem) => {
+                          return {
+                            legend: "",
+                            base64:
+                              "data:image/png;base64," + imagem.imagemBase64,
+                          };
+                        })
+                      : [
+                          {
+                            legend: "",
+                            base64:
+                              "https://django-metabuscador.s3.amazonaws.com/static/home/images/no-photo.png",
+                          },
+                        ]
+                  }
+                />
+              )}
+            </>
+          )}
+          {!currentProperty && (
+            <Upload
               className={propertyRegistryStyles.registryImg}
+              getUploadedImages={setImages}
             />
-            <FormGroup className={propertyRegistryStyles.registryForm}>
-              <Grid
-                container
-                spacing={1}
-                direction="row"
-                justifyContent="center"
-                alignItems="center"
-              >
+          )}
+          <FormGroup className={propertyRegistryStyles.registryForm}>
+            <Grid
+              container
+              direction="row"
+              justifyContent="center"
+              alignItems="center"
+            >
+              <Grid item xs={12}>
                 <TextField
                   label="Preço"
                   placeholder="Preço"
@@ -187,8 +302,6 @@ export default function PropertyRegistry(props) {
                   InputProps={{
                     inputComponent: NumberFormatCustom,
                   }}
-                  defaultValue={currentProperty.preco}
-                  key={currentProperty.id}
                   multiline
                   helperText={
                     values && values.preco <= 0
@@ -201,128 +314,164 @@ export default function PropertyRegistry(props) {
                   fullWidth
                 />
               </Grid>
-
-              <TextField
-                error={values && values.preco <= 0}
-                name="endereco"
-                id="endereco"
-                label="Endereço"
-                key={currentProperty.id}
-                onChange={handleChange}
-                size="small"
-                defaultValue={currentProperty.endereco}
-                className={propertyRegistryStyles.field}
-                variant="outlined"
-              />
-              <TextField
-                error={values && values.bairro === ""}
-                name="bairro"
-                id="bairro"
-                label="Bairro"
-                onChange={handleChange}
-                size="small"
-                defaultValue={currentProperty.bairro}
-                className={propertyRegistryStyles.field}
-                variant="outlined"
-              />
-              <TextField
-                error={values && values.cidade === ""}
-                name="cidade"
-                id="cidade"
-                label="Cidade"
-                onChange={handleChange}
-                size="small"
-                defaultValue={currentProperty.cidade}
-                className={propertyRegistryStyles.field}
-                variant="outlined"
-              />
-              {/* TODO -> DROPDOWN LIST
-              <TextField
-                error={values && values.preco <= 0}
-                name="proprietario."
-                id="outlined-error-helper-text"
-                label="Proprietário"
-                onChange={handleChange}
-                size="small"
-                defaultValue={currentProperty.endereco}
-                className={propertyRegistryStyles.field}
-                variant="outlined"
-              /> */}
-              <TextField
-                error={values && values.proprietario.telefone === ""}
-                name="telefone"
-                id="telefone"
-                label="Telefone"
-                onChange={handleChange}
-                size="small"
-                disabled
-                defaultValue={currentProperty.proprietario.telefone}
-                className={propertyRegistryStyles.field}
-                variant="outlined"
-              />
-              <Grid
-                container
-                spacing={1}
-                direction="row"
-                justifyContent="center"
-                alignItems="center"
-              >
-                <Grid item xs={5}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={values?.flFinanciado === "S"}
-                        onChange={handleChangeCheckbox}
-                        className={propertyRegistryStyles.checkboxes}
-                        name="flFinanciado"
-                      />
-                    }
-                    label="Financiado"
-                  />
-                </Grid>{" "}
-                <Grid item xs={5}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={values?.flNegociacao === "S"}
-                        onChange={handleChangeCheckbox}
-                        className={propertyRegistryStyles.checkboxes}
-                        name="flNegociacao"
-                      />
-                    }
-                    label="Negociação"
-                  />
-                </Grid>
-                <Grid item xs={5}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={values?.flProprietario === "S"}
-                        onChange={handleChangeCheckbox}
-                        className={propertyRegistryStyles.checkboxes}
-                        name="flProprietario"
-                      />
-                    }
-                    label="Proprietário"
-                  />
-                </Grid>
-                <Grid item xs={5}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={values?.flInativo === "S"}
-                        onChange={handleChangeCheckbox}
-                        className={propertyRegistryStyles.checkboxes}
-                        name="flInativo"
-                      />
-                    }
-                    label="Inativo"
-                  />
-                </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  name="endereco"
+                  id="endereco"
+                  label="Endereço"
+                  onChange={handleChange}
+                  size="small"
+                  value={values?.endereco}
+                  className={propertyRegistryStyles.field}
+                  variant="outlined"
+                />
               </Grid>
-            </FormGroup>
-          </FormControl>
-        )}
+              <Grid item xs={6}>
+                <TextField
+                  name="bairro"
+                  id="bairro"
+                  label="Bairro"
+                  onChange={handleChange}
+                  size="small"
+                  value={values?.bairro}
+                  className={propertyRegistryStyles.field}
+                  variant="outlined"
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  name="cidade"
+                  id="cidade"
+                  label="Cidade"
+                  onChange={handleChange}
+                  size="small"
+                  value={values?.cidade}
+                  className={propertyRegistryStyles.field}
+                  variant="outlined"
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  name="pais"
+                  id="pais"
+                  label="País"
+                  onChange={handleChange}
+                  size="small"
+                  value={values?.pais}
+                  className={propertyRegistryStyles.field}
+                  variant="outlined"
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  name="owner"
+                  id="owner"
+                  label="Owner do agenciamento"
+                  onChange={handleChange}
+                  size="small"
+                  value={values?.owner}
+                  className={propertyRegistryStyles.field}
+                  variant="outlined"
+                />
+              </Grid>
+              <SituationSelector
+                getSelectedSituation={setSituation}
+                currentPropertySituation={values?.situacao?.id}
+              />
+              <OwnerSelector
+                getSelectedOwner={setOwner}
+                currentPropertyOwner={values?.proprietario?.id}
+              />
+              <Grid item xs={registerDateSize}>
+                <TextField
+                  name="dtCadastro"
+                  id="dtCadastro"
+                  label="Data de Cadastro"
+                  onChange={handleChange}
+                  size="small"
+                  disabled
+                  value={values?.dtCadastro}
+                  className={propertyRegistryStyles.field}
+                  variant="outlined"
+                />
+              </Grid>
+              {values?.dtAlteracao && (
+                <Grid item xs={6}>
+                  <TextField
+                    name="dtAlteracao"
+                    id="dtAlteracao"
+                    label="Última alteração"
+                    onChange={handleChange}
+                    size="small"
+                    value={values?.dtAlteracao}
+                    className={propertyRegistryStyles.field}
+                    variant="outlined"
+                  />
+                </Grid>
+              )}
+            </Grid>
+            <Grid
+              container
+              spacing={1}
+              direction="row"
+              justifyContent="center"
+              alignItems="center"
+            >
+              <Grid item xs={5}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={values?.flFinanciado === "S"}
+                      onChange={handleChangeCheckbox}
+                      className={propertyRegistryStyles.checkboxes}
+                      name="flFinanciado"
+                    />
+                  }
+                  label="Financiado"
+                />
+              </Grid>
+              <Grid item xs={5}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={values?.flNegociacao === "S"}
+                      onChange={handleChangeCheckbox}
+                      className={propertyRegistryStyles.checkboxes}
+                      name="flNegociacao"
+                    />
+                  }
+                  label="Negociação"
+                />
+              </Grid>
+              <Grid item xs={5}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={values?.flProprietario === "S"}
+                      onChange={handleChangeCheckbox}
+                      className={propertyRegistryStyles.checkboxes}
+                      name="flProprietario"
+                    />
+                  }
+                  label="Proprietário"
+                />
+              </Grid>
+              <Grid item xs={5}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={values?.flInativo === "S"}
+                      onChange={handleChangeCheckbox}
+                      className={propertyRegistryStyles.checkboxes}
+                      name="flInativo"
+                    />
+                  }
+                  label="Inativo"
+                />
+              </Grid>
+            </Grid>
+          </FormGroup>
+        </FormControl>
       </Grid>
       <Divider />
       <Grid

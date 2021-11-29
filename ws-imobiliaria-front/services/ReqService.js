@@ -73,8 +73,6 @@ const DoRequest = async (apiType, endpoint, data, method, hasAuth = true, header
         default: return result;
     }
 
-    debugger;
-
     return result;
 }
 

@@ -1,6 +1,9 @@
-.buttonBase{
-    width: 100%;
+.buttonBase {
+  width: 100%;
 }
-.activeCard{
-    border: 5px solid red;
+.activeCard {
+  border: 5px solid red;
+}
+.alertIcon {
+  color: orange;
 }

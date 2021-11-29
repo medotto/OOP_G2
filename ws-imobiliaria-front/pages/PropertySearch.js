@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { QuickSort } from "../services/General";
 import * as FilterActions from "../redux/actions/FilterActions";
 import * as PropertyActions from "../redux/actions/PropertyActions";
+import { getProperties } from "../services/ImobiliariaService";
 
 const PropertySearch = () => {
     const dispatch = useDispatch();
@@ -14,6 +15,7 @@ const PropertySearch = () => {
     const filterInfo = useSelector((state) => state.FilterReducer);
     const propertySelector = useSelector((state) => state.PropertyReducer);
     const userSelector = useSelector((state) => state.UserReducer);
+    const [refreshProperties, setRefreshProperties] = useState(false);
 
     const onClickFunction = (property) => {
         dispatch(PropertyActions.SetActiveProperty((propertySelector.activeProperty === property) ? null : property));
@@ -44,18 +46,11 @@ const PropertySearch = () => {
 
     useEffect(() => {
         if (userSelector.token || sessionStorage.getItem("userCredentials")) {
-            const getProperties = async () => {
-                return await DoRequest(
-                    "IMOBILIARIA",
-                    "imoveis",
-                    {},
-                    "GET",
-                    true,
-                    {},
-                    userSelector.token || JSON.parse(sessionStorage.getItem("userCredentials")).access_token
-                );
-            }
-            getProperties()
+            let sessionStorageValues = JSON.parse(sessionStorage.getItem("userCredentials"))
+            getProperties(
+                userSelector.token || sessionStorageValues.access_token,
+                sessionStorageValues.email
+            )
                 .then((resp) => {
                     setProperties(resp);
                     setInitialProperties(resp);
@@ -63,6 +58,22 @@ const PropertySearch = () => {
                 });
         }
     }, [userSelector.token])
+
+    useEffect(() => {
+        if (propertySelector.refreshProperties && (userSelector.token || sessionStorage.getItem("userCredentials"))) {
+            let sessionStorageValues = JSON.parse(sessionStorage.getItem("userCredentials"))
+            getProperties(
+                userSelector.token || sessionStorageValues.access_token,
+                sessionStorageValues.email
+            )
+                .then((resp) => {
+                    setProperties(resp);
+                    setInitialProperties(resp);
+                    setMaxMinPrices(resp);
+                });
+            dispatch(PropertyActions.RefreshProperties(false));
+        }
+    }, [propertySelector.refreshProperties])
 
     useEffect(() => {
         if (initialProperties)

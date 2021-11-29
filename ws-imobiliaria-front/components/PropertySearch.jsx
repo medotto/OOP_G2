@@ -12,7 +12,8 @@ import FilterListRoundedIcon from "@material-ui/icons/FilterListRounded";
 import PropertyFilters from "./PropertyFilters";
 import PropertyRegistry from "./PropertyRegistry";
 import AddRoundedIcon from "@material-ui/icons/AddRounded";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import * as PropertyActions from "../redux/actions/PropertyActions.js";
 
 const drawerLeftWidth = 200;
 const drawerRightWidth = 500;
@@ -57,13 +58,14 @@ const useStyles = makeStyles((theme) => ({
 
 export default function PropertySearch(props) {
   const classes = useStyles();
+  const dispatch = useDispatch();
   const [openFilters, setOpenFilters] = React.useState(false);
   const [openInfo, setOpenInfo] = React.useState(false);
 
   const propertyInfos = useSelector((store) => store.PropertyReducer);
-  
+
   useEffect(() => {
-    setOpenInfo(!!propertyInfos.activeProperty);
+    setOpenInfo({ value: !!propertyInfos.activeProperty, origin: "edit" });
   }, [propertyInfos]);
 
   return (
@@ -81,13 +83,16 @@ export default function PropertySearch(props) {
       </IconButton>
       <IconButton
         className={
-          openInfo
+          openInfo.value
             ? propertyRegistryStyles.drawerButtonMoved
             : propertyRegistryStyles.drawerButtonClosed
         }
-        onClick={() => setOpenInfo(!openInfo)}
+        onClick={() => {
+          if (openInfo.value) dispatch(PropertyActions.SetActiveProperty(null));
+          setOpenInfo({ value: !openInfo.value, origin: "add" });
+        }}
       >
-        {openInfo ? <ChevronRightIcon /> : <AddRoundedIcon />}
+        {openInfo.value ? <ChevronRightIcon /> : <AddRoundedIcon />}
       </IconButton>
       <CssBaseline />
       <PropertyFilters open={openFilters} />
@@ -98,7 +103,7 @@ export default function PropertySearch(props) {
           }) +
           " " +
           clsx(classes.contentRight, {
-            [classes.contentRightShift]: openInfo,
+            [classes.contentRightShift]: openInfo.value,
           })
         }
       >
