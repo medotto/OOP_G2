@@ -75,4 +75,7 @@ public class Imovel {
     @NotAudited
     private String flInativo;
 
+    @Column(name = "OPERADOR")
+    private String operador;
+
 }

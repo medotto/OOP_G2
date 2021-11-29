@@ -64,4 +64,6 @@ public class ImovelDto {
 
     private String flInativo;
 
+    private String operador;
+
 }

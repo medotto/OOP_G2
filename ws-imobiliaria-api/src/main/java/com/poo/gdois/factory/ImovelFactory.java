@@ -42,6 +42,7 @@ public class ImovelFactory {
                 .flFinanciado(dto.getFlFinanciado())
                 .flProprietario(dto.getFlProprietario())
                 .flNegociacao(dto.getFlNegociacao())
+                .operador(dto.getOperador())
                 .build();
     }
 
@@ -69,6 +70,7 @@ public class ImovelFactory {
                 .flInativo(entity.getFlInativo())
                 .dtAlteracao(entity.getDtAlteracao())
                 .dtCadastro(entity.getDtCadastro())
+                .operador(entity.getOperador())
                 .build();
     }
 
