@@ -1,5 +1,6 @@
 import DoRequest from "./ReqService";
 
+//#region Owners
 export const getOwners = async (token) => {
     return await DoRequest(
         "IMOBILIARIA",
@@ -12,6 +13,29 @@ export const getOwners = async (token) => {
     );
 }
 
+export const editOwner = async (body, token) => {
+    return await DoRequest(
+        "IMOBILIARIA",
+        `proprietarios`,
+        body,
+        "PUT",
+        true,
+        {},
+        token
+    );
+}
+export const postOwner = async (body, token) => {
+    return await DoRequest(
+        "IMOBILIARIA",
+        `proprietarios`,
+        body,
+        "POST",
+        true,
+        {},
+        token
+    );
+}
+//#endregion
 export const getProperties = async (token, owner) => {
     return await DoRequest(
         "IMOBILIARIA",

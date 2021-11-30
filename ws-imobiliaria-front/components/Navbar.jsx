@@ -13,6 +13,7 @@ import MoreIcon from "@material-ui/icons/MoreVert";
 import { useSelector } from "react-redux";
 import navbarStyles from "../styles/Navbar.module.css";
 import { useRouter } from "next/router";
+import Button from "@material-ui/core/Button";
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -167,53 +168,62 @@ export default function Navbar() {
   return (
     <>
       {isAuth && (
-        <div className={navbarStyles.navbar}>
-          <AppBar position="static">
-            <Toolbar>
-              <Typography className={classes.title} variant="h6" noWrap>
-                WS IMOBILIÁRIA
-              </Typography>
-              <div className={classes.grow} />
-              <div className={classes.sectionDesktop}>
-                <IconButton
-                  aria-label="show 17 new notifications"
-                  color="inherit"
-                >
-                  <Badge
-                    badgeContent={notificationInfo.length}
-                    color="secondary"
+        <>
+          <div className={navbarStyles.navbar}>
+            <AppBar position="static">
+              <Toolbar>
+                <Typography className={classes.title} variant="h6" noWrap>
+                  WS IMOBILIÁRIA
+                </Typography>
+                <div className={classes.grow} />
+                <div className={classes.sectionDesktop}>
+                  <Button
+                    color="inherit"
+                    onClick={() => router.push("/Proprietarios")}
                   >
-                    <NotificationsIcon />
-                  </Badge>
-                </IconButton>
-                <IconButton
-                  edge="end"
-                  aria-label="account of current user"
-                  aria-controls={menuId}
-                  aria-haspopup="true"
-                  onClick={handleProfileMenuOpen}
-                  color="inherit"
-                  style={{ zIndex: 100001 }}
-                >
-                  <AccountCircle />
-                </IconButton>
-              </div>
-              <div className={classes.sectionMobile}>
-                <IconButton
-                  aria-label="show more"
-                  aria-controls={mobileMenuId}
-                  aria-haspopup="true"
-                  onClick={handleMobileMenuOpen}
-                  color="inherit"
-                >
-                  <MoreIcon />
-                </IconButton>
-              </div>
-            </Toolbar>
-          </AppBar>
-          {renderMobileMenu}
-          {renderMenu}
-        </div>
+                    Proprietários
+                  </Button>
+                  <IconButton
+                    aria-label="show 17 new notifications"
+                    color="inherit"
+                  >
+                    <Badge
+                      badgeContent={notificationInfo.length}
+                      color="secondary"
+                    >
+                      <NotificationsIcon />
+                    </Badge>
+                  </IconButton>
+                  <IconButton
+                    edge="end"
+                    aria-label="account of current user"
+                    aria-controls={menuId}
+                    aria-haspopup="true"
+                    onClick={handleProfileMenuOpen}
+                    color="inherit"
+                    style={{ zIndex: 100001 }}
+                  >
+                    <AccountCircle />
+                  </IconButton>
+                </div>
+                <div className={classes.sectionMobile}>
+                  <IconButton
+                    aria-label="show more"
+                    aria-controls={mobileMenuId}
+                    aria-haspopup="true"
+                    onClick={handleMobileMenuOpen}
+                    color="inherit"
+                  >
+                    <MoreIcon />
+                  </IconButton>
+                </div>
+              </Toolbar>
+            </AppBar>
+            {renderMobileMenu}
+            {renderMenu}
+          </div>
+          <div className={navbarStyles.navbarSpace}></div>
+        </>
       )}
     </>
   );

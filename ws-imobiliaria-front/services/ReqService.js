@@ -59,7 +59,7 @@ const DoRequest = async (apiType, endpoint, data, method, hasAuth = true, header
 
     let result = await fetch(assembleAPIAddress(apiType, endpoint), requestConfig)
         .then((resp) => resp.json())
-        .then(resp => resp);
+        .catch((er) => "");
 
     switch (result.status) {
         case 500:

@@ -1,6 +1,5 @@
 .navbar {
-  margin-bottom: 20px;
-  position: fixed;
+  position: fixed !important;
   width: 100vw;
   z-index: 10000;
 }

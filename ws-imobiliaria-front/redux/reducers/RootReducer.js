@@ -5,6 +5,7 @@ import { combineReducers } from "redux";
 import FilterReducer from "./FilterReducer";
 import UserReducer from "./UserReducer";
 import AddingImageReducer from "./AddingImageActions";
+import DynamicTableReducer from "./DynamicTableReducer";
 
 const RootReducer = combineReducers({
     ToasterReducer: ToasterReducer,
@@ -12,7 +13,8 @@ const RootReducer = combineReducers({
     PropertyReducer: PropertyReducer,
     FilterReducer: FilterReducer,
     UserReducer: UserReducer,
-    AddingImageReducer: AddingImageReducer
+    AddingImageReducer: AddingImageReducer,
+    DynamicTableReducer: DynamicTableReducer
 });
 
 
