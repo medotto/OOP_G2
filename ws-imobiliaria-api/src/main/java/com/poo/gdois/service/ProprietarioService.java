@@ -14,4 +14,6 @@ public interface ProprietarioService {
 
     List<ProprietarioDto> findAll();
 
+    void delete(Long id);
+
 }

@@ -42,4 +42,10 @@ public class ProprietarioControllerImpl extends AbstractController implements Pr
         return ResponseEntity.ok(proprietarioService.findAll());
     }
 
+    @Override
+    public ResponseEntity<?> delete(Long id) {
+        proprietarioService.delete(id);
+        return ResponseEntity.ok().build();
+    }
+
 }

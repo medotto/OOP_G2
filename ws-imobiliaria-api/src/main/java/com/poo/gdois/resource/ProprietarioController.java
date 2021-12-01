@@ -22,4 +22,7 @@ public interface ProprietarioController {
     @GetMapping
     ResponseEntity<List<ProprietarioDto>> findAll();
 
+    @DeleteMapping(path = "/{id}")
+    ResponseEntity<?> delete(@PathVariable Long id);
+
 }

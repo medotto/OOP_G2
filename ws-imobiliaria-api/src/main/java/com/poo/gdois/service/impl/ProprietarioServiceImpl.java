@@ -6,7 +6,9 @@ import com.poo.gdois.mapper.Mapper;
 import com.poo.gdois.repository.ProprietarioRepository;
 import com.poo.gdois.service.ProprietarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -49,6 +51,15 @@ public class ProprietarioServiceImpl implements ProprietarioService {
     public List<ProprietarioDto> findAll() {
         var proprietarios = proprietarioRepository.findAll();
         return mapper.mapToDtoList(proprietarios, DTO_CLASS);
+    }
+
+    @Override
+    public void delete(Long id) {
+        try {
+            proprietarioRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Não foi possível excluir o propietário!");
+        }
     }
 
 }
