@@ -64,11 +64,9 @@ public class Imovel {
     private String flNegociacao;
 
     @Column(name = "DT_CADASTRO")
-    @NotAudited
     private LocalDateTime dtCadastro;
 
     @Column(name = "DT_ALTERACAO")
-    @NotAudited
     private LocalDateTime dtAlteracao;
 
     @Column(name = "FL_INATIVO")
