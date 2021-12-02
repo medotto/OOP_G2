@@ -68,6 +68,15 @@
   width: 200;
   margin: 20px auto;
 }
-
-.loginPaperCard{
+.loginPaperCard {
+  height: 100vh;
+  padding: 10%;
+}
+.loginBackground {
+  background: url("https://images.adsttc.com/media/images/5e1d/02c3/3312/fd58/9c00/06e9/large_jpg/NewHouse_SA_Photo_01.jpg?1578959519");
+  background-repeat: no-repeat;
+  background-size: contain;
+  object-fit: contain;
+  height: 100vh;
+  width: 100vw;
 }

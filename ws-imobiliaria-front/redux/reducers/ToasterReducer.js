@@ -2,7 +2,7 @@ import * as Types from '../types';
 const initialState = {
     open: false,
     type: "",
-    duration: 6000,
+    duration: 3000,
     message: ""
 };
 const ToasterReducer = (state = initialState, action) => {
