@@ -34,6 +34,8 @@ public class ResourceConfig extends ResourceServerConfigurerAdapter {
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests().antMatchers(HttpMethod.GET, "/imoveis").permitAll();
+        http.authorizeRequests().antMatchers(HttpMethod.GET, "/proprietarios").permitAll();
+        http.authorizeRequests().antMatchers(HttpMethod.GET, "/situacoes").permitAll();
         http.authorizeRequests().anyRequest().authenticated();
         http.cors().configurationSource(corsConfigurationSource());
     }
