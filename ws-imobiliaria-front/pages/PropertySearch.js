@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import PropertyCard from "../components/PropertyCard";
 import PropertySearchComponent from "../components/PropertySearch";
-import DoRequest from "../services/ReqService";
 import { useDispatch, useSelector } from "react-redux";
 import { QuickSort } from "../services/General";
 import * as FilterActions from "../redux/actions/FilterActions";
 import * as PropertyActions from "../redux/actions/PropertyActions";
-import { getProperties } from "../services/ImobiliariaService";
+import { getAllProperties, getPropertiesByOwner } from "../services/ImobiliariaService";
 
 const PropertySearch = () => {
     const dispatch = useDispatch();
@@ -15,43 +14,57 @@ const PropertySearch = () => {
     const filterInfo = useSelector((state) => state.FilterReducer);
     const propertySelector = useSelector((state) => state.PropertyReducer);
     const userSelector = useSelector((state) => state.UserReducer);
-    const [refreshProperties, setRefreshProperties] = useState(false);
 
     const onClickFunction = (property) => {
         dispatch(PropertyActions.SetActiveProperty((propertySelector.activeProperty === property) ? null : property));
     }
 
     const setMaxMinPrices = (resp) => {
-        let minValue = resp[0].preco;
-        let maxValue = resp[resp.length - 1].preco;
-        if (minValue > maxValue) {
-            let aux = minValue;
-            minValue = maxValue;
-            maxValue = aux;
+        if (resp.length > 0) {
+            let minValue = resp[0].preco;
+            let maxValue = resp[resp.length - 1].preco;
+            if (minValue > maxValue) {
+                let aux = minValue;
+                minValue = maxValue;
+                maxValue = aux;
+            }
+            dispatch(FilterActions.SetPriceRange({ min: minValue, max: maxValue }));
         }
-        dispatch(FilterActions.SetPriceRange({ min: minValue, max: maxValue }));
     }
+
+    useEffect(() => {
+        console.log(properties);
+    }, [properties])
 
     useEffect(() => {
         if (initialProperties) {
             let min = filterInfo.priceRange.min;
             let max = filterInfo.priceRange.max;
-
             setProperties(initialProperties.filter((property) =>
                 filterInfo.status.withPhotos ? filterInfo?.filters?.withPhotos(property) : true
                     && filterInfo.status.withPriceRange ? filterInfo.filters.withPriceRange(property, min, max) : true
             ));
         }
-    }, [initialProperties, filterInfo])
+    }, [filterInfo])
 
     useEffect(() => {
-        if (userSelector.token || sessionStorage.getItem("userCredentials")) {
-            let sessionStorageValues = JSON.parse(sessionStorage.getItem("userCredentials"))
-            getProperties(
-                userSelector.token || sessionStorageValues.access_token,
-                sessionStorageValues.email
+        if (userSelector.token || localStorage.getItem("userCredentials")) {
+            let localStorageValues = JSON.parse(localStorage.getItem("userCredentials"))
+            getPropertiesByOwner(
+                userSelector.token || localStorageValues.access_token,
+                localStorageValues.email
             )
                 .then((resp) => {
+                    console.log("enter 1")
+                    setProperties(resp);
+                    setInitialProperties(resp);
+                    setMaxMinPrices(resp);
+                });
+        }
+        else {
+            getAllProperties()
+                .then((resp) => {
+                    console.log("enter 2")
                     setProperties(resp);
                     setInitialProperties(resp);
                     setMaxMinPrices(resp);
@@ -60,12 +73,21 @@ const PropertySearch = () => {
     }, [userSelector.token])
 
     useEffect(() => {
-        if (propertySelector.refreshProperties && (userSelector.token || sessionStorage.getItem("userCredentials"))) {
-            let sessionStorageValues = JSON.parse(sessionStorage.getItem("userCredentials"))
-            getProperties(
-                userSelector.token || sessionStorageValues.access_token,
-                sessionStorageValues.email
+        if (propertySelector.refreshProperties && (userSelector.token || localStorage.getItem("userCredentials"))) {
+            let localStorageValues = JSON.parse(localStorage.getItem("userCredentials"))
+            getPropertiesByOwner(
+                userSelector.token || localStorageValues.access_token,
+                localStorageValues.email
             )
+                .then((resp) => {
+                    setProperties(resp);
+                    setInitialProperties(resp);
+                    setMaxMinPrices(resp);
+                });
+            dispatch(PropertyActions.RefreshProperties(false));
+        }
+        else {
+            getAllProperties()
                 .then((resp) => {
                     setProperties(resp);
                     setInitialProperties(resp);

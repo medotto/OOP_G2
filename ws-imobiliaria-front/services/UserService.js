@@ -10,3 +10,14 @@ export const searchUser = async (email) => {
         {}
     );
 }
+
+export const createUser = async (body) => {
+    return await DoRequest(
+        "USER",
+        `users`,
+        body,
+        "POST",
+        false,
+        {}
+    );
+}

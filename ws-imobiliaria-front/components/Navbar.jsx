@@ -14,6 +14,7 @@ import { useSelector } from "react-redux";
 import navbarStyles from "../styles/Navbar.module.css";
 import { useRouter } from "next/router";
 import Button from "@material-ui/core/Button";
+import firebase from "../firebase/clientApp";
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -87,6 +88,9 @@ export default function Navbar() {
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  const userSelector = useSelector((state) => state.UserReducer);
+  const [isLogged, setIsLogged] = useState(false);
+
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -105,9 +109,11 @@ export default function Navbar() {
 
   useEffect(() => {}, [notificationInfo]);
 
-  // useEffect(() => {
-  //   if (!isAuth) router.push("/Login");
-  // }, [isAuth]);
+  useEffect(() => {
+    setIsLogged(
+      !!firebase.auth().currentUser || !!localStorage.getItem("userCredentials")
+    );
+  }, []);
 
   useEffect(() => {
     setIsAuth(
@@ -127,8 +133,32 @@ export default function Navbar() {
       onClose={handleMenuClose}
       style={{ zIndex: 100001 }}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      {isLogged ? (
+        <>
+          {firebase.auth().currentUser && (
+            <MenuItem onClick={handleMenuClose}>
+              {firebase.auth().currentUser.displayName}
+            </MenuItem>
+          )}
+          <MenuItem
+            onClick={() =>
+              firebase
+                .auth()
+                .signOut()
+                .then(() => {
+                  localStorage.removeItem("userCredentials");
+                  router.push("Login");
+                })
+            }
+          >
+            Sair
+          </MenuItem>
+        </>
+      ) : (
+        <Button color="inherit" onClick={() => router.push("/Login")}>
+          Entrar
+        </Button>
+      )}
     </Menu>
   );
 
@@ -143,25 +173,30 @@ export default function Navbar() {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem>
-        <IconButton aria-label="show 11 new notifications" color="inherit">
-          <Badge badgeContent={notificationInfo.length} color="secondary">
-            <NotificationsIcon />
-          </Badge>
-        </IconButton>
-        <p>Notifications</p>
-      </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
-        <IconButton
-          aria-label="account of current user"
-          aria-controls="primary-search-account-menu"
-          aria-haspopup="true"
-          color="inherit"
-        >
-          <AccountCircle />
-        </IconButton>
-        <p>Profile</p>
-      </MenuItem>
+      {firebase.auth().currentUser && (
+        <>
+          <MenuItem>
+            <IconButton aria-label="show 11 new notifications" color="inherit">
+              <Badge badgeContent={notificationInfo.length} color="secondary">
+                <NotificationsIcon />
+              </Badge>
+            </IconButton>
+            <p>Notifications</p>
+          </MenuItem>
+
+          <MenuItem onClick={handleProfileMenuOpen}>
+            <IconButton
+              aria-label="account of current user"
+              aria-controls="primary-search-account-menu"
+              aria-haspopup="true"
+              color="inherit"
+            >
+              <AccountCircle />
+            </IconButton>
+            <p>Profile</p>
+          </MenuItem>
+        </>
+      )}
     </Menu>
   );
 
@@ -177,23 +212,27 @@ export default function Navbar() {
                 </Typography>
                 <div className={classes.grow} />
                 <div className={classes.sectionDesktop}>
-                  <Button
-                    color="inherit"
-                    onClick={() => router.push("/Proprietarios")}
-                  >
-                    Proprietários
-                  </Button>
-                  <IconButton
-                    aria-label="show 17 new notifications"
-                    color="inherit"
-                  >
-                    <Badge
-                      badgeContent={notificationInfo.length}
-                      color="secondary"
+                  {userSelector.token && (
+                    <Button
+                      color="inherit"
+                      onClick={() => router.push("/Proprietarios")}
                     >
-                      <NotificationsIcon />
-                    </Badge>
-                  </IconButton>
+                      Proprietários
+                    </Button>
+                  )}
+                  {firebase.auth().currentUser && (
+                    <IconButton
+                      aria-label="show 17 new notifications"
+                      color="inherit"
+                    >
+                      <Badge
+                        badgeContent={notificationInfo.length}
+                        color="secondary"
+                      >
+                        <NotificationsIcon />
+                      </Badge>
+                    </IconButton>
+                  )}
                   <IconButton
                     edge="end"
                     aria-label="account of current user"

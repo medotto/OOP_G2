@@ -13,12 +13,19 @@ import { createTheme } from "@material-ui/core/styles";
 import loginStyles from "../styles/Login.module.css";
 import { SocialMediaAuth } from "./SocialMediaAuth";
 import { useRouter } from "next/router";
+import { useAuthState } from "react-firebase-hooks/auth";
+import firebase from "../firebase/clientApp";
+import { getUserToken } from "../services/AuthService";
+import { useDispatch } from "react-redux";
 
 const theme = createTheme();
 
 export default function LoginCard(props) {
   const router = useRouter();
+  const dispatch = useDispatch();
   const [facebookLoginClick, setFacebookLoginClick] = useState(false);
+  const [user, loading, error] = useAuthState(firebase.auth());
+  const [requestedAuth, setRequestedAuth] = useState(false);
 
   const handleChange = (event) => {
     props.getValidationForm({
@@ -29,11 +36,17 @@ export default function LoginCard(props) {
   const handleSubmit = (event) => {
     event.preventDefault();
     props.hasSubmited(true);
-  }
+  };
 
   useEffect(() => {
-    sessionStorage.clear();
+    localStorage.removeItem("userCredentials");
   }, []);
+
+  useEffect(() => {
+    if (!loading && user) {
+      getUserToken(user.email, user.email, dispatch, router);
+    }
+  }, [loading]);
 
   return (
     // <ThemeProvider theme={theme}>
@@ -61,11 +74,7 @@ export default function LoginCard(props) {
             <Typography component="h1" variant="h5">
               Entrar
             </Typography>
-            <Box
-              component="form"
-              noValidate
-              onSubmit={handleSubmit}
-            >
+            <Box component="form" noValidate onSubmit={handleSubmit}>
               <TextField
                 margin="normal"
                 required
@@ -106,7 +115,16 @@ export default function LoginCard(props) {
                 >
                   ENTRAR
                 </Button>
-                <SocialMediaAuth />
+                <SocialMediaAuth callBackLink={"/Login"} />
+                <Button
+                  onClick={() =>
+                    signInWithGoogle()
+                      .then((user) => {
+                        console.log(user);
+                      })
+                      .catch((e) => console.log(e.message))
+                  }
+                />
               </Grid>
             </Box>
           </Box>

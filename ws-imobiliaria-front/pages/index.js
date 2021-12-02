@@ -4,9 +4,9 @@ import { useRouter } from 'next/router'
 const home = () => {
   const router = useRouter();
 
-  useEffect(() => {
-      router.push("/Login")
-  }, []);
+  // useEffect(() => {
+  //     router.push("/PropertySearch")
+  // }, []);
 
   return (
     <>

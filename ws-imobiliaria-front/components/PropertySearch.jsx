@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import clsx from "clsx";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -14,6 +14,7 @@ import PropertyRegistry from "./PropertyRegistry";
 import AddRoundedIcon from "@material-ui/icons/AddRounded";
 import { useSelector, useDispatch } from "react-redux";
 import * as PropertyActions from "../redux/actions/PropertyActions.js";
+import firebase from "firebase";
 
 const drawerLeftWidth = 200;
 const drawerRightWidth = 500;
@@ -61,12 +62,19 @@ export default function PropertySearch(props) {
   const dispatch = useDispatch();
   const [openFilters, setOpenFilters] = React.useState(false);
   const [openInfo, setOpenInfo] = React.useState(false);
+  const [isLogged, setIsLogged] = useState(false);
 
   const propertyInfos = useSelector((store) => store.PropertyReducer);
 
   useEffect(() => {
     setOpenInfo({ value: !!propertyInfos.activeProperty, origin: "edit" });
   }, [propertyInfos]);
+
+  useEffect(() => {
+    setIsLogged(
+      firebase.auth().currentUser || localStorage.getItem("userCredentials")
+    );
+  }, []);
 
   return (
     <div className={classes.root}>
@@ -81,19 +89,22 @@ export default function PropertySearch(props) {
       >
         {openFilters ? <ChevronLeftIcon /> : <FilterListRoundedIcon />}
       </IconButton>
-      <IconButton
-        className={
-          openInfo.value
-            ? propertyRegistryStyles.drawerButtonMoved
-            : propertyRegistryStyles.drawerButtonClosed
-        }
-        onClick={() => {
-          if (openInfo.value) dispatch(PropertyActions.SetActiveProperty(null));
-          setOpenInfo({ value: !openInfo.value, origin: "add" });
-        }}
-      >
-        {openInfo.value ? <ChevronRightIcon /> : <AddRoundedIcon />}
-      </IconButton>
+      {isLogged && (
+        <IconButton
+          className={
+            openInfo.value
+              ? propertyRegistryStyles.drawerButtonMoved
+              : propertyRegistryStyles.drawerButtonClosed
+          }
+          onClick={() => {
+            if (openInfo.value)
+              dispatch(PropertyActions.SetActiveProperty(null));
+            setOpenInfo({ value: !openInfo.value, origin: "add" });
+          }}
+        >
+          {openInfo.value ? <ChevronRightIcon /> : <AddRoundedIcon />}
+        </IconButton>
+      )}
       <CssBaseline />
       <PropertyFilters open={openFilters} />
       <main
@@ -118,6 +129,7 @@ export default function PropertySearch(props) {
           {props.children}
         </Grid>
       </main>
+
       <PropertyRegistry open={openInfo} />
     </div>
   );

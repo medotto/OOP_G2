@@ -1,7 +1,6 @@
 export const setHeaderProp = (header, propName, propValue) => header[propName] = propValue;
 import Store from "../redux/store/Store";
 import * as ToasterActions from "../redux/actions/ToasterActions";
-import ApyType from "./ApiType";
 
 export const assembleAPIAddress = (apiType, endpoint) => {
     let apiAddressWithPort = `${process.env.API_BASE_HOST}`

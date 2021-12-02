@@ -29,11 +29,17 @@
 .field {
   margin-bottom: 15px !important;
 }
+.auditoriaButton,
 .saveButton,
 .undoButton {
   height: 50px;
   width: 100%;
   margin-top: 15px !important;
+}
+
+.undoButton{
+  background-color: red !important;
+  color: white !important;
 }
 .saveButton {
   background-color: green !important;

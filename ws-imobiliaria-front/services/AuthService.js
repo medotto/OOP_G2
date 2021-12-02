@@ -23,14 +23,14 @@ export const getUserToken = async (email, password, dispatch, router) => {
         true,
         headers
     );
-
     if (result.access_token) {
         funcResult = true;
-        if (sessionStorage)
-            sessionStorage.setItem("userCredentials", JSON.stringify({ email, access_token: result.access_token }))
+        if (localStorage)
+            localStorage.setItem("userCredentials", JSON.stringify({ email, access_token: result.access_token }))
         dispatch(UserActions.SetUserToken(result.access_token));
         router.push("/PropertySearch");
     } else {
+        funcResult = result;
         dispatch(ToasterActions.PushToaster("error", result.error_description));
     }
 

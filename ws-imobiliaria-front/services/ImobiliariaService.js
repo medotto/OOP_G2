@@ -36,7 +36,8 @@ export const postOwner = async (body, token) => {
     );
 }
 //#endregion
-export const getProperties = async (token, owner) => {
+//#region Property
+export const getPropertiesByOwner = async (token, owner) => {
     return await DoRequest(
         "IMOBILIARIA",
         `imoveis/owner/${owner}`,
@@ -47,6 +48,17 @@ export const getProperties = async (token, owner) => {
         token
     );
 }
+export const getAllProperties = async (owner) => {
+    return await DoRequest(
+        "IMOBILIARIA",
+        `imoveis`,
+        {},
+        "GET",
+        true,
+        {}, null
+    );
+}
+
 
 export const getPropertySituations = async (token) => {
     return await DoRequest(
@@ -83,3 +95,16 @@ export const editProperty = async (body, token) => {
         token
     );
 }
+
+export const getAuditoria = async (propertyId, token) => {
+    return await DoRequest(
+        "IMOBILIARIA",
+        `imoveis/${propertyId}/auditoria`,
+        {},
+        "GET",
+        true,
+        {},
+        token
+    );
+}
+//#endregion

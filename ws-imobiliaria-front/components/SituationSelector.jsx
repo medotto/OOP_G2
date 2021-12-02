@@ -7,11 +7,13 @@ import { useSelector } from "react-redux";
 import Grid from "@material-ui/core/Grid";
 import propertyRegistryStyles from "../styles/PropertyRegistry.module.css";
 import FormControl from "@material-ui/core/FormControl";
+import firebase from "firebase";
 
 export default function SituationSelector(props) {
   const [situations, setSituations] = useState([]);
   const userSelector = useSelector((state) => state.UserReducer);
   const [selectedSituation, selectSituation] = useState(-1);
+  const [isLogged, setIsLogged] = useState(false);
 
   const handleChange = (event) => {
     let situation = event.target.value;
@@ -25,10 +27,16 @@ export default function SituationSelector(props) {
   }, [props.currentPropertySituation]);
 
   useEffect(() => {
-    if (userSelector.token || sessionStorage.getItem("userCredentials")) {
+    setIsLogged(
+      firebase.auth().currentUser || localStorage.getItem("userCredentials")
+    );
+  }, []);
+
+  useEffect(() => {
+    if (userSelector.token || localStorage.getItem("userCredentials")) {
       getPropertySituations(
         userSelector.token ||
-          JSON.parse(sessionStorage.getItem("userCredentials")).access_token
+          JSON.parse(localStorage.getItem("userCredentials")).access_token
       ).then((resp) => {
         if (resp) {
           resp.unshift({ id: -1, situacao: "Selecione:" });
@@ -48,6 +56,7 @@ export default function SituationSelector(props) {
         <InputLabel
           id="demo-simple-select-outlined-label"
           className={propertyRegistryStyles.ownerSelect}
+          disabled={!isLogged}
         >
           Situação
         </InputLabel>
@@ -55,6 +64,7 @@ export default function SituationSelector(props) {
           className={propertyRegistryStyles.field}
           value={selectedSituation}
           onChange={handleChange}
+          disabled={!isLogged}
           label="Situação"
         >
           {situations.map((situation, index) => {

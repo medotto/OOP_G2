@@ -1,7 +1,18 @@
-.buttonDynamicTable{
-    min-width: 200px !important;
-    margin: 2px !important;
+.buttonDynamicTable {
+  min-width: 200px !important;
+  margin: 2px !important;
 }
-.buttonContainer{
-    padding-top: 45px;
+.buttonContainer {
+  padding-top: 45px;
+}
+.table tbody{
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+  max-width: 500px !important;
+}
+
+.table tbody {
+    display: table;
+    width: 100%;
 }

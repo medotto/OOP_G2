@@ -13,30 +13,60 @@ import { createTheme } from "@material-ui/core/styles";
 import loginStyles from "../styles/Login.module.css";
 import { SocialMediaAuth } from "./SocialMediaAuth";
 import { useRouter } from "next/router";
-
+import { useAuthState } from "react-firebase-hooks/auth";
+import firebase from "../firebase/clientApp";
+import { getUserToken } from "../services/AuthService";
+import { useDispatch } from "react-redux";
+import { searchUser } from "../services/UserService";
+import { createUser } from "../services/UserService";
 const theme = createTheme();
 
 export default function SignUpCard(props) {
   const router = useRouter();
-  const [facebookLoginClick, setFacebookLoginClick] = useState(false);
+  const dispatch = useDispatch();
+
+  const [values, setValues] = useState({
+    name: "",
+    email: "",
+    password: "",
+    userRole: { id: 3 },
+  });
+  const [user, loading, error] = useAuthState(firebase.auth());
+
+  useEffect(() => {
+    localStorage.removeItem("userCredentials");
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      getUserToken(user.email, user.email, dispatch, router).then((resp) => {
+        if (resp.error) {
+          createUser({
+            nome: user.displayName,
+            email: user.email,
+            password: user.email,
+            userRole: values.userRole,
+          }).then((resp) => {
+            if (!resp.error) {
+              getUserToken(user.email, user.password, dispatch, router);
+            }
+          });
+        }
+      });
+    }
+  }, [user]);
+
   const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    // eslint-disable-next-line no-console
-    sessionStorage.setItem("auth", true);
-    router.push("/PropertySearch");
+    props.createUserFunc(values);
   };
 
-  // useEffect(() => {
-  //   sessionStorage.clear();
-  // }, []);
-
   const handleChange = (event) => {
-    props.setUserRole(event.target.id);
+    setValues({ ...values, [event.target.name]: event.target.value });
+    if (event.target.name.includes("checkbox"))
+      setValues({ ...values, userRole: { id: event.target.id } });
   };
 
   return (
-    // <ThemeProvider theme={theme}>
     <Grid container justifyContent="center" component="main">
       <Grid item xs={12} sm={7} md={4} component={Paper} elevation={6}>
         <Grid
@@ -61,15 +91,27 @@ export default function SignUpCard(props) {
             <Typography component="h1" variant="h5">
               Cadastrar-se
             </Typography>
-            <Box component="form" noValidate onSubmit={handleSubmit}>
+            <Box component="form" noValidate>
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="nome"
+                label="Nome"
+                name="nome"
+                onChange={handleChange}
+                value={values.nome}
+                autoFocus
+              />
               <TextField
                 margin="normal"
                 required
                 fullWidth
                 id="email"
+                onChange={handleChange}
                 label="Endereço de e-mail"
+                value={values.email}
                 name="email"
-                autoComplete="email"
                 autoFocus
               />
               <TextField
@@ -78,24 +120,27 @@ export default function SignUpCard(props) {
                 fullWidth
                 name="password"
                 label="Senha"
+                onChange={handleChange}
                 type="password"
                 id="password"
-                autoComplete="current-password"
+                value={values.password}
               />
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={props.userRole == 2}
+                    checked={values.userRole?.id == 2}
+                    name="checkbox-admin"
                     id="2"
                     onChange={handleChange}
                   />
                 }
-                label="Aprovador"
-              />{" "}
+                label="Admin"
+              />
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={props.userRole == 3}
+                    checked={values?.userRole?.id == 3}
+                    name="checkbox-cadastrador"
                     id="3"
                     onChange={handleChange}
                   />
@@ -109,14 +154,14 @@ export default function SignUpCard(props) {
                 alignItems="center"
               >
                 <Button
-                  type="submit"
                   variant="contained"
+                  onClick={(event) => handleSubmit(event)}
                   color="primary"
                   style={{ width: "205px" }}
                 >
                   Cadastrar-se
                 </Button>
-                <SocialMediaAuth />
+                <SocialMediaAuth callBackLink={"/SignUp"} />
               </Grid>
             </Box>
           </Box>
@@ -136,6 +181,5 @@ export default function SignUpCard(props) {
         }}
       />
     </Grid>
-    // </ThemeProvider>
   );
 }

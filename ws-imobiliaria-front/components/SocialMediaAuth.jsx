@@ -1,22 +1,30 @@
 import React from "react";
 import firebase from "../firebase/clientApp";
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
-import 'firebaseui/dist/firebaseui.css'
+import "firebaseui/dist/firebaseui.css";
 
 const provider = new firebase.auth.GoogleAuthProvider();
 provider.setCustomParameters({ prompt: "select_account" });
 
-const uiConfig = {
-  signInSuccessUrl: "/",
-  signInOptions: [
-    firebase.auth.GithubAuthProvider.PROVIDER_ID,
-    firebase.auth.FacebookAuthProvider.PROVIDER_ID,
-    firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-  ],
-};
+export const SocialMediaAuth = (props) => {
+  const uiConfig = {
+    signInSuccessUrl: props.callBackLink,
+    signInFlow: "popup",
+    signInOptions: [
+      firebase.auth.GithubAuthProvider.PROVIDER_ID,
+      firebase.auth.FacebookAuthProvider.PROVIDER_ID,
+      firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+    ],
+  };
 
-export const SocialMediaAuth = () => {
   return (
-    <StyledFirebaseAuth  uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
+    <StyledFirebaseAuth
+      uiCallback={(ui) => {
+        ui.disableAutoSignIn();
+        localStorage.setItem("need_auth", true);
+      }}
+      uiConfig={uiConfig}
+      firebaseAuth={firebase.auth()}
+    />
   );
 };
