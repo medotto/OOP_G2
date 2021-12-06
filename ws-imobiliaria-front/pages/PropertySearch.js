@@ -6,6 +6,12 @@ import { QuickSort } from "../services/General";
 import * as FilterActions from "../redux/actions/FilterActions";
 import * as PropertyActions from "../redux/actions/PropertyActions";
 import { getAllProperties, getPropertiesByOwner } from "../services/ImobiliariaService";
+import firebase from "firebase";
+import { searchUser } from "../services/UserService";
+
+const isAdmin = (roles) => {
+    return roles.filter((role) => role.id === 1).length > 0;
+}
 
 const PropertySearch = () => {
     const dispatch = useDispatch();
@@ -14,6 +20,8 @@ const PropertySearch = () => {
     const filterInfo = useSelector((state) => state.FilterReducer);
     const propertySelector = useSelector((state) => state.PropertyReducer);
     const userSelector = useSelector((state) => state.UserReducer);
+    const [isLogged, setIsLogged] = useState(false);
+    const [isAdm, setIsAdm] = useState(false);
 
     const onClickFunction = (property) => {
         dispatch(PropertyActions.SetActiveProperty((propertySelector.activeProperty === property) ? null : property));
@@ -28,79 +36,93 @@ const PropertySearch = () => {
                 minValue = maxValue;
                 maxValue = aux;
             }
-            dispatch(FilterActions.SetPriceRange({ min: minValue, max: maxValue }));
+            dispatch(FilterActions.SetPriceRange({
+                ...filterInfo.priceRange,
+                defaultMin: minValue,
+                defaultMax: maxValue
+            }));
         }
     }
-
-    useEffect(() => {
-        console.log(properties);
-    }, [properties])
 
     useEffect(() => {
         if (initialProperties) {
             let min = filterInfo.priceRange.min;
             let max = filterInfo.priceRange.max;
-            setProperties(initialProperties.filter((property) =>
+            let filteredProperties = initialProperties.filter((property) =>
                 filterInfo.status.withPhotos ? filterInfo?.filters?.withPhotos(property) : true
                     && filterInfo.status.withPriceRange ? filterInfo.filters.withPriceRange(property, min, max) : true
-            ));
+            );
+            setProperties(QuickSort(filteredProperties, 0, filteredProperties.length - 1, filterInfo.orderBy.field, filterInfo.orderBy.orientation));
         }
     }, [filterInfo])
 
     useEffect(() => {
-        if (userSelector.token || localStorage.getItem("userCredentials")) {
+        if (isLogged) {
             let localStorageValues = JSON.parse(localStorage.getItem("userCredentials"))
-            getPropertiesByOwner(
-                userSelector.token || localStorageValues.access_token,
-                localStorageValues.email
-            )
-                .then((resp) => {
-                    console.log("enter 1")
-                    setProperties(resp);
-                    setInitialProperties(resp);
-                    setMaxMinPrices(resp);
-                });
+            if (!isAdm) {
+                getPropertiesByOwner(
+                    userSelector.token || localStorageValues.access_token,
+                    localStorageValues.email
+                )
+                    .then((resp) => {
+                        setProperties(resp);
+                        setInitialProperties(resp);
+                        setMaxMinPrices(resp);
+                    });
+            }
+            else {
+                getAllProperties()
+                    .then((resp) => {
+                        setProperties(resp);
+                        setInitialProperties(resp);
+                        setMaxMinPrices(resp);
+                    });
+            }
         }
-        else {
-            getAllProperties()
-                .then((resp) => {
-                    console.log("enter 2")
-                    setProperties(resp);
-                    setInitialProperties(resp);
-                    setMaxMinPrices(resp);
-                });
-        }
-    }, [userSelector.token])
+    }, [isLogged, isAdm])
 
     useEffect(() => {
-        if (propertySelector.refreshProperties && (userSelector.token || localStorage.getItem("userCredentials"))) {
-            let localStorageValues = JSON.parse(localStorage.getItem("userCredentials"))
-            getPropertiesByOwner(
-                userSelector.token || localStorageValues.access_token,
-                localStorageValues.email
-            )
-                .then((resp) => {
-                    setProperties(resp);
-                    setInitialProperties(resp);
-                    setMaxMinPrices(resp);
-                });
-            dispatch(PropertyActions.RefreshProperties(false));
-        }
-        else {
-            getAllProperties()
-                .then((resp) => {
-                    setProperties(resp);
-                    setInitialProperties(resp);
-                    setMaxMinPrices(resp);
-                });
-            dispatch(PropertyActions.RefreshProperties(false));
+        if (propertySelector.refreshProperties && isLogged) {
+            if (!isAdm) {
+                let localStorageValues = JSON.parse(localStorage.getItem("userCredentials"))
+                getPropertiesByOwner(
+                    userSelector.token || localStorageValues.access_token,
+                    localStorageValues.email
+                )
+                    .then((resp) => {
+                        setProperties(resp);
+                        setMaxMinPrices(resp);
+                    });
+                dispatch(PropertyActions.RefreshProperties(false));
+            }
+            else {
+                getAllProperties()
+                    .then((resp) => {
+                        setProperties(resp);
+                        setMaxMinPrices(QuickSort(resp, 0, resp.length - 1, "preco", "asc"));
+                    });
+                dispatch(PropertyActions.RefreshProperties(false));
+            }
+
         }
     }, [propertySelector.refreshProperties])
 
     useEffect(() => {
-        if (initialProperties)
-            setInitialProperties(QuickSort(initialProperties, 0, initialProperties.length - 1, filterInfo.orderBy.field, filterInfo.orderBy.orientation));
-    }, [initialProperties, filterInfo.orderBy.field])
+        setIsLogged(userSelector.token || localStorage.getItem("userCredentials"));
+    }, [])
+
+    useEffect(() => {
+        if (isLogged)
+            searchUser(JSON.parse(localStorage.getItem("userCredentials")).email)
+                .then((resp) => {
+                    if (resp)
+                        setIsAdm(isAdmin(resp.roleList))
+                })
+    }, [isLogged])
+
+    useEffect(() => {
+        console.log(isAdm)
+    }, [isAdm])
 
     useEffect(() => {
         if (initialProperties) {

@@ -18,10 +18,6 @@ const Login = () => {
   const [user, loading, error] = useAuthState(firebase.auth())
 
   useEffect(() => {
-    console.log(result)
-  }, [result])
-
-  useEffect(() => {
     if (!userExists && hasSubmitted) {
       getUserToken(result.email, result.password, dispatch, router)
         .then((result) => {

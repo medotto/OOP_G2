@@ -44,13 +44,16 @@ NumberFormatCustom.propTypes = {
 export default function PriceFilter(props) {
   const filterInfo = useSelector((state) => state.FilterReducer);
   const dispatch = useDispatch();
-
   const classes = useStyles();
-  const [values, setValues] = useState({ min: 100000, max: 200000 });
+  const [values, setValues] = useState({});
+  const [hadManualChange, setHadManualChange] = useState(false);
 
   useEffect(() => {
+    if (hadManualChange)
+      dispatch(FilterActions.SetFilter({ withPriceRange: true }));
     dispatch(
       FilterActions.SetPriceRange({
+        ...filterInfo.priceRange,
         min: values.min,
         max: values.max,
       })
@@ -64,11 +67,19 @@ export default function PriceFilter(props) {
     });
   };
 
+  useEffect(() => {
+    setValues({
+      min: filterInfo.priceRange.defaultMin,
+      max: filterInfo.priceRange.defaultMax,
+    });
+  }, [filterInfo.priceRange.defaultMin, filterInfo.priceRange.defaultMax]);
+
   return (
     <div className={classes.root}>
       <TextField
         label="De"
         value={values.min}
+        onKeyPress={() => setHadManualChange(true)}
         onChange={handleChange}
         name="min"
         id="min"

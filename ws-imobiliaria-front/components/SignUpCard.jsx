@@ -29,7 +29,7 @@ export default function SignUpCard(props) {
     name: "",
     email: "",
     password: "",
-    userRole: { id: 3 },
+    userRole: { id: "3" },
   });
   const [user, loading, error] = useAuthState(firebase.auth());
 
@@ -45,10 +45,10 @@ export default function SignUpCard(props) {
             nome: user.displayName,
             email: user.email,
             password: user.email,
-            userRole: values.userRole,
+            roleList: [values.userRole],
           }).then((resp) => {
             if (!resp.error) {
-              getUserToken(user.email, user.password, dispatch, router);
+              getUserToken(user.email, user.email, dispatch, router);
             }
           });
         }
@@ -57,7 +57,11 @@ export default function SignUpCard(props) {
   }, [user]);
 
   const handleSubmit = (event) => {
-    props.createUserFunc(values);
+    createUser(values).then((resp) => {
+      if (!resp.error) {
+        getUserToken(values.email, values.password, dispatch, router);
+      }
+    });
   };
 
   const handleChange = (event) => {
@@ -139,7 +143,7 @@ export default function SignUpCard(props) {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={values?.userRole?.id == 3}
+                    checked={values.userRole?.id == 3}
                     name="checkbox-cadastrador"
                     id="3"
                     onChange={handleChange}

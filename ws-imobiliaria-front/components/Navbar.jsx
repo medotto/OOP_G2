@@ -15,6 +15,7 @@ import navbarStyles from "../styles/Navbar.module.css";
 import { useRouter } from "next/router";
 import Button from "@material-ui/core/Button";
 import firebase from "../firebase/clientApp";
+import { searchUser } from "../services/UserService";
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -90,6 +91,7 @@ export default function Navbar() {
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   const userSelector = useSelector((state) => state.UserReducer);
   const [isLogged, setIsLogged] = useState(false);
+  const [userDbProperties, setUserDbProperties] = useState({});
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -107,18 +109,26 @@ export default function Navbar() {
 
   const notificationInfo = useSelector((state) => state.NotificationReducer);
 
-  useEffect(() => {}, [notificationInfo]);
+  useEffect(() => {
+    setIsLogged(
+      firebase.auth().currentUser || localStorage.getItem("userCredentials")
+    );
+  }, []);
 
   useEffect(() => {
     setIsLogged(
-      !!firebase.auth().currentUser || !!localStorage.getItem("userCredentials")
+      firebase.auth().currentUser || localStorage.getItem("userCredentials")
     );
-  }, []);
+  }, [userSelector.token]);
 
   useEffect(() => {
     setIsAuth(
       !router.pathname.includes("Login") && !router.pathname.includes("SignUp")
     );
+    if (localStorage.getItem("userCredentials"))
+      searchUser(
+        JSON.parse(localStorage.getItem("userCredentials")).email
+      ).then((resp) => setUserDbProperties(resp));
   }, [router.pathname]);
 
   const menuId = "primary-search-account-menu";
@@ -133,32 +143,34 @@ export default function Navbar() {
       onClose={handleMenuClose}
       style={{ zIndex: 100001 }}
     >
-      {isLogged ? (
-        <>
-          {firebase.auth().currentUser && (
-            <MenuItem onClick={handleMenuClose}>
-              {firebase.auth().currentUser.displayName}
+      <div>
+        {isLogged ? (
+          <>
+            {firebase.auth().currentUser && (
+              <MenuItem onClick={handleMenuClose}>
+                {firebase.auth().currentUser.displayName}
+              </MenuItem>
+            )}
+            <MenuItem
+              onClick={() =>
+                firebase
+                  .auth()
+                  .signOut()
+                  .then(() => {
+                    localStorage.removeItem("userCredentials");
+                    router.push("Login");
+                  })
+              }
+            >
+              Sair
             </MenuItem>
-          )}
-          <MenuItem
-            onClick={() =>
-              firebase
-                .auth()
-                .signOut()
-                .then(() => {
-                  localStorage.removeItem("userCredentials");
-                  router.push("Login");
-                })
-            }
-          >
-            Sair
-          </MenuItem>
-        </>
-      ) : (
-        <Button color="inherit" onClick={() => router.push("/Login")}>
-          Entrar
-        </Button>
-      )}
+          </>
+        ) : (
+          <Button color="inherit" onClick={() => router.push("/Login")}>
+            Entrar
+          </Button>
+        )}
+      </div>
     </Menu>
   );
 
@@ -173,30 +185,35 @@ export default function Navbar() {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      {firebase.auth().currentUser && (
-        <>
-          <MenuItem>
-            <IconButton aria-label="show 11 new notifications" color="inherit">
-              <Badge badgeContent={notificationInfo.length} color="secondary">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
-            <p>Notifications</p>
-          </MenuItem>
+      <div>
+        {isLogged && (
+          <>
+            <MenuItem>
+              <IconButton
+                aria-label="show 11 new notifications"
+                color="inherit"
+              >
+                <Badge badgeContent={notificationInfo.length} color="secondary">
+                  <NotificationsIcon />
+                </Badge>
+              </IconButton>
+              <p>Notifications</p>
+            </MenuItem>
 
-          <MenuItem onClick={handleProfileMenuOpen}>
-            <IconButton
-              aria-label="account of current user"
-              aria-controls="primary-search-account-menu"
-              aria-haspopup="true"
-              color="inherit"
-            >
-              <AccountCircle />
-            </IconButton>
-            <p>Profile</p>
-          </MenuItem>
-        </>
-      )}
+            <MenuItem onClick={handleProfileMenuOpen}>
+              <IconButton
+                aria-label="account of current user"
+                aria-controls="primary-search-account-menu"
+                aria-haspopup="true"
+                color="inherit"
+              >
+                <AccountCircle />
+              </IconButton>
+              <p>Profile</p>
+            </MenuItem>
+          </>
+        )}
+      </div>
     </Menu>
   );
 
@@ -208,31 +225,41 @@ export default function Navbar() {
             <AppBar position="static">
               <Toolbar>
                 <Typography className={classes.title} variant="h6" noWrap>
-                  WS IMOBILIÁRIA
+                  IMOBILIÁRIA
                 </Typography>
                 <div className={classes.grow} />
                 <div className={classes.sectionDesktop}>
-                  {userSelector.token && (
-                    <Button
-                      color="inherit"
-                      onClick={() => router.push("/Proprietarios")}
-                    >
-                      Proprietários
-                    </Button>
-                  )}
-                  {firebase.auth().currentUser && (
-                    <IconButton
-                      aria-label="show 17 new notifications"
-                      color="inherit"
-                    >
-                      <Badge
-                        badgeContent={notificationInfo.length}
-                        color="secondary"
+                  {isLogged &&
+                    !window.location.href.includes("PropertySearch") && (
+                      <Button
+                        color="inherit"
+                        onClick={() => router.push("/PropertySearch")}
                       >
-                        <NotificationsIcon />
-                      </Badge>
-                    </IconButton>
-                  )}
+                        Buscar
+                      </Button>
+                    )}
+                  {isLogged &&
+                    userDbProperties.roleList &&
+                    userDbProperties.roleList[0]?.id <= 2 &&
+                    !window.location.href.includes("UserApprove") && (
+                      <Button
+                        color="inherit"
+                        onClick={() => router.push("/UserApprove")}
+                      >
+                        Aprovação de Usuários
+                      </Button>
+                    )}
+                  {isLogged &&
+                    userDbProperties.roleList &&
+                    userDbProperties.roleList[0]?.id == 1 &&
+                    !window.location.href.includes("Proprietarios") && (
+                      <Button
+                        color="inherit"
+                        onClick={() => router.push("/Proprietarios")}
+                      >
+                        Proprietários
+                      </Button>
+                    )}
                   <IconButton
                     edge="end"
                     aria-label="account of current user"

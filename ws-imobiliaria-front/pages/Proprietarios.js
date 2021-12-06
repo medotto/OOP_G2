@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import DynamicTable from "../components/GenericComponents/DynamicTable";
-import { getOwners, editOwner, postOwner } from "../services/ImobiliariaService";
+import { getOwners, editOwner, postOwner, deleteOwner } from "../services/ImobiliariaService";
 import { useDispatch, useSelector } from "react-redux";
 import * as DynamicTableActions from "../redux/actions/DynamicTableActions";
 import { QuickSort } from "../services/General";
@@ -31,6 +31,18 @@ const Proprietarios = () => {
             ).then(() => setRefresh(true));
         }
     }
+    const handleDelete = (selectedOwners) => {
+        if (userSelector.token || localStorage.getItem("userCredentials")) {
+            selectedOwners.forEach((selectedOwner) => {
+                deleteOwner(
+                    selectedOwner.id,
+                    userSelector.token ||
+                    JSON.parse(localStorage.getItem("userCredentials")).access_token
+                ).then(() => setRefresh(true))
+            })
+        }
+    }
+
     useEffect(() => {
         if (userSelector.token || localStorage.getItem("userCredentials")) {
             getOwners(
@@ -66,7 +78,7 @@ const Proprietarios = () => {
                     data={owners}
                     putFunc={handleEdit}
                     postFunc={handleAdd}
-                    deleteFunc={() => console.log()} />
+                    deleteFunc={handleDelete} />
             }
         </div>
     );

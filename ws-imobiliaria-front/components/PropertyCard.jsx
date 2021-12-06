@@ -40,7 +40,7 @@ export default function PropertyCard(props) {
                 props.data.imagemImovelDtoList[0]?.imagemBase64
                   ? "data:image/png;base64," +
                     props.data.imagemImovelDtoList[0]?.imagemBase64
-                  : "https://picsum.photos/1920/1080?random=1"
+                  : "https://django-metabuscador.s3.amazonaws.com/static/home/images/no-photo.png"
               }
             />
             <CardContent className={propertyCardStyles.cardContent}>
@@ -60,7 +60,7 @@ export default function PropertyCard(props) {
               <Typography variant="body2">
                 {phoneNumberFormatter(props.data.proprietario.telefone)}
               </Typography>
-              {!props.data.flInativo && (
+              {!props.data.flInativo == "S" && (
                 <Tooltip
                   title="A propriedade não foi atualizada há mais de 90 dias!"
                   aria-label="add"

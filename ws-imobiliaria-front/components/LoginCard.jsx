@@ -116,15 +116,6 @@ export default function LoginCard(props) {
                   ENTRAR
                 </Button>
                 <SocialMediaAuth callBackLink={"/Login"} />
-                <Button
-                  onClick={() =>
-                    signInWithGoogle()
-                      .then((user) => {
-                        console.log(user);
-                      })
-                      .catch((e) => console.log(e.message))
-                  }
-                />
               </Grid>
             </Box>
           </Box>

@@ -24,16 +24,16 @@ export default function DynamicTable(props) {
   const [isAdding, setIsAdding] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const [headers, setHeaders] = useState(Object.keys(props.data.slice()[0]));
-  const [values, setValues] = useState(props.data.slice());
-
+  const [headers, setHeaders] = useState(
+    Object.keys(props.data.length > 0 ? props.data.slice()[0] : {})
+  );
+  const [values, setValues] = useState(
+    props.data.length > 0 ? props.data.slice() : []
+  );
   const [columns, setColumns] = useState([]);
   const [rows, setRows] = useState([]);
-
-  const DynamicTableSelector = useSelector(
-    (state) => state.DynamicTableReducer
-  );
-
+  
+  //#region Handlers
   function handleBackToReadonlyMode() {
     setIsEditing(false);
     if (isAdding) {
@@ -62,6 +62,7 @@ export default function DynamicTable(props) {
     setValues(aux);
     handleBackToReadonlyMode();
   }
+
   function handleAdd() {
     setIsAdding(true);
     let aux = values.map((el) => el);
@@ -70,6 +71,7 @@ export default function DynamicTable(props) {
     aux.push(auxObj);
     setValues(aux);
   }
+
   function handleDelete() {
     let aux = headers.slice();
     aux.push("apagar");
@@ -88,17 +90,19 @@ export default function DynamicTable(props) {
       props.putFunc(changes.map((change) => values[change.row]));
     if (isAdding && props.postFunc && changes[0]) props.postFunc(changes[0]);
     if (isDeleting && props.deleteFunc)
-      props.deleteFunc(values.map((value) => value.apagar === true));
+      props.deleteFunc(values.filter((value) => value.apagar === true));
     handleBackToReadonlyMode();
   }
 
   const updatePropertyValue = (index, column, newValue) => {
-    let aux = values.map((el) => el);
+    let aux = changes.slice();
+
+    aux = values.map((el) => el);
     aux[index][column] = newValue;
     setValues(aux);
   };
 
-  const handleChange = (event) => {
+  const handleChange = (event, isCheckbox = false) => {
     let [index, column] = event.target.id.split(",");
     let aux = changes.map((el) => el);
 
@@ -110,13 +114,19 @@ export default function DynamicTable(props) {
           row: index,
           changedProp: column,
           oldValue: values[index][column],
-          newValue: event.target.value,
+          newValue: isCheckbox ? event.target.checked : event.target.value,
         });
       else {
-        aux[indexChange].newValue = event.target.value;
+        aux[indexChange].newValue = isCheckbox
+          ? event.target.checked
+          : event.target.value;
       }
       setChanges(aux);
-      updatePropertyValue(index, column, event.target.value);
+      updatePropertyValue(
+        index,
+        column,
+        isCheckbox ? event.target.checked : event.target.value
+      );
     }
     if (isAdding) {
       aux[0] = changes[0] || {};
@@ -124,11 +134,8 @@ export default function DynamicTable(props) {
       setChanges(aux);
     }
   };
-
-  useEffect(() => {
-    if (DynamicTableSelector.length > 0) setValues(DynamicTableSelector);
-  }, [DynamicTableSelector]);
-
+  //#endregion
+  //#region Effects
   useEffect(() => {
     let auxColumns = [];
     let auxRows = [];
@@ -146,6 +153,13 @@ export default function DynamicTable(props) {
     setRows(auxRows);
   }, [values, headers]);
 
+  useEffect(() => {
+    setHeaders(Object.keys(props.data.length > 0 ? props.data.slice()[0] : {}));
+    setValues(props.data.length > 0 ? props.data.slice() : []);
+  }, [props.data]);
+
+  //#endregion
+  
   return (
     <Grid container justifyContent="center">
       <Grid
@@ -174,20 +188,41 @@ export default function DynamicTable(props) {
                       <TableCell key={index + "," + header} align="left">
                         {!isEditing &&
                           (!isAdding || index !== values.length - 1) &&
-                          emp[header]}
-                        {isEditing && (
-                          <TextField
-                            name={header}
-                            id={index + "," + header}
-                            label=""
-                            disabled={header === "id"}
-                            onChange={handleChange}
-                            size="small"
-                            fullWidth
-                            value={values[index][header]}
-                            variant="outlined"
-                          />
-                        )}
+                          (!(
+                            header.toUpperCase().includes("ST") ||
+                            header.toUpperCase().includes("FL")
+                          )
+                            ? emp[header]
+                            : emp[header]
+                            ? "Sim"
+                            : "Não")}
+                        {isEditing &&
+                          !(
+                            header.toUpperCase().includes("ST") ||
+                            header.toUpperCase().includes("FL")
+                          ) && (
+                            <TextField
+                              name={header}
+                              id={index + "," + header}
+                              label=""
+                              disabled={header === "id"}
+                              onChange={handleChange}
+                              size="small"
+                              fullWidth
+                              value={values[index][header]}
+                              variant="outlined"
+                            />
+                          )}
+                        {isEditing &&
+                          (header.toUpperCase().includes("ST") ||
+                            header.toUpperCase().includes("FL")) && (
+                            <Checkbox
+                              id={index + "," + header}
+                              checked={values[index][header]}
+                              name={header}
+                              onChange={(event) => handleChange(event, true)}
+                            />
+                          )}
                         {isDeleting && header.toUpperCase() === "APAGAR" && (
                           <Checkbox
                             id={index + "," + header}

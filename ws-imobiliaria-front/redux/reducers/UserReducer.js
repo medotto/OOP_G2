@@ -1,6 +1,7 @@
 import * as Types from '../types';
 const initialState = {
-    token: null
+    token: null,
+    roles: null
 };
 const UserReducer = (state = initialState, action) => {
     switch (action.type) {
@@ -8,6 +9,11 @@ const UserReducer = (state = initialState, action) => {
             return {
                 ...state,
                 token: action.payload
+            }
+        case Types.SET_USER_ROLES:
+            return {
+                ...state,
+                roles: action.payload
             }
         default:
             return { ...state };

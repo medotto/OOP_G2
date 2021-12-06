@@ -1,10 +1,11 @@
 import * as Types from '../types';
 
-export const PushToaster = (toasterType, toasterMessage) => ({
+export const PushToaster = (toasterType, toasterMessage, duration = 3000) => ({
     type: Types.PUSH_TOASTER,
     payload: {
         type: toasterType,
-        message: toasterMessage
+        message: toasterMessage,
+        duration: duration
     }
 })
 

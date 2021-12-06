@@ -35,6 +35,17 @@ export const postOwner = async (body, token) => {
         token
     );
 }
+export const deleteOwner = async (ownerId, token) => {
+    return await DoRequest(
+        "IMOBILIARIA",
+        `proprietarios/${ownerId}`,
+        {},
+        "DELETE",
+        true,
+        {},
+        token
+    );
+}
 //#endregion
 //#region Property
 export const getPropertiesByOwner = async (token, owner) => {

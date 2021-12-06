@@ -8,11 +8,11 @@ const initialState = {
     },
     status: {
         withPhotos: false,
-        withPriceRange: true,
+        withPriceRange: false,
         withContact: false
     },
     orderBy: { field: "preco", orientation: "asc" },
-    priceRange: { min: 1000, max: 2000 }
+    priceRange: { min: 1000, max: 2000, defaultMin: 0, defaultMax: 0 }
 };
 
 const FilterReducer = (state = initialState, action) => {

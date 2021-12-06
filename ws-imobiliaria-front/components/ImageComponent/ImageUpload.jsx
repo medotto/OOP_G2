@@ -50,7 +50,6 @@ export default function Upload(props) {
 
   useEffect(() => {
     if (base64s) {
-      console.log(base64s);
       props.getUploadedImages(base64s);
       dispatch(AddingImageActions.SetPendingImages(base64s));
     }

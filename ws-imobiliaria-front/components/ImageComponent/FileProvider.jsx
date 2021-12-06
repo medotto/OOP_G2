@@ -55,19 +55,10 @@ const FileProvider = ({ children }) => {
             let progress = Math.round(
               (progressEvent.loaded * 100) / progressEvent.total
             );
-
-            console.log(
-              `A imagem ${uploadedFile.name} está ${progress}% carregada... `
-            );
-
             updateFile(uploadedFile.id, { progress });
           },
         })
         .then((response) => {
-          console.log(
-            `A imagem ${uploadedFile.name} já foi enviada para o servidor!`
-          );
-
           updateFile(uploadedFile.id, {
             uploaded: true,
             id: response.data._id,
@@ -76,10 +67,8 @@ const FileProvider = ({ children }) => {
         })
         .catch((err) => {
           console.error(
-            `Houve um problema para fazer upload da imagem ${uploadedFile.name} no servidor AWS`
+            `Houve um problema para fazer upload da imagem ${uploadedFile.name} no servidor`
           );
-          console.log(err);
-
           updateFile(uploadedFile.id, {
             error: true,
           });

@@ -21,3 +21,26 @@ export const createUser = async (body) => {
         {}
     );
 }
+
+export const updateUser = async (body, token) => {
+    return await DoRequest(
+        "USER",
+        `users`,
+        body,
+        "PUT",
+        true,
+        {}, 
+        token
+    );
+}
+
+export const getAllUsers = async () => {
+    return await DoRequest(
+        "USER",
+        `users`,
+        {},
+        "GET",
+        false,
+        {}
+    );
+}
